@@ -2,6 +2,16 @@
   "name": "algebraic-data-type",
   "version": "0.0.0",
   "description": "",
+  "homepage": "https://github.com/ootidea/algebraic-data-type#readme",
+  "bugs": {
+    "url": "https://github.com/ootidea/algebraic-data-type/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ootidea/algebraic-data-type.git"
+  },
+  "license": "CC0-1.0",
+  "author": "ootidea",
   "main": "index.js",
   "scripts": {
     "format": "run-p format:*",
@@ -9,22 +19,12 @@
     "format:package-json": "sort-package-json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ootidea/algebraic-data-type.git"
-  },
-  "author": "ootidea",
-  "license": "CC0-1.0",
-  "bugs": {
-    "url": "https://github.com/ootidea/algebraic-data-type/issues"
-  },
-  "homepage": "https://github.com/ootidea/algebraic-data-type#readme",
-  "volta": {
-    "node": "18.12.1"
-  },
   "devDependencies": {
     "npm-run-all": "^4.1.5",
     "prettier": "^2.8.8",
     "sort-package-json": "^2.4.1"
+  },
+  "volta": {
+    "node": "18.12.1"
   }
 }
