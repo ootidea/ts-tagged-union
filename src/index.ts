@@ -1,6 +1,6 @@
 export const DISCRIMINANT = Symbol();
 
-export type AbstractDataType<T extends Record<string, any>> = {
+export type AlgebraicDataType<T extends Record<string, any>> = {
   [K in keyof T]: Simplify<{ [DISCRIMINANT]: K } & T[K]>;
 }[keyof T];
 

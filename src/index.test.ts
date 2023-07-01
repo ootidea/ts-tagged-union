@@ -1,14 +1,14 @@
 import { expect, test } from 'vitest';
-import { AbstractDataType, createCtors, DISCRIMINANT, match } from './index';
+import { AlgebraicDataType, createCtors, DISCRIMINANT, match } from './index';
 
 test('Ctors', () => {
-  type Shape = AbstractDataType<{ Rect: { width: number; height: number }; Circle: { radius: number } }>;
+  type Shape = AlgebraicDataType<{ Rect: { width: number; height: number }; Circle: { radius: number } }>;
   const ctors = createCtors<Shape>();
   expect(ctors.Circle({ radius: 3 })).toStrictEqual({ [DISCRIMINANT]: 'Circle', radius: 3 });
 });
 
 test('match', () => {
-  type Shape = AbstractDataType<{ Rect: { width: number; height: number }; Circle: { radius: number } }>;
+  type Shape = AlgebraicDataType<{ Rect: { width: number; height: number }; Circle: { radius: number } }>;
   const ctors = createCtors<Shape>();
   const shape = ctors.Circle({ radius: 3 }) as Shape;
   expect(
