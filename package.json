@@ -1,0 +1,19 @@
+{
+  "name": "algebraic-data-type",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ootidea/algebraic-data-type.git"
+  },
+  "author": "ootidea",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/ootidea/algebraic-data-type/issues"
+  },
+  "homepage": "https://github.com/ootidea/algebraic-data-type#readme"
+}
