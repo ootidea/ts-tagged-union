@@ -11,7 +11,7 @@ type Payload<Adt extends { [DISCRIMINANT]: string }, K extends Adt[typeof DISCRI
 >;
 
 type Ctors<Adt extends { [DISCRIMINANT]: string }> = Simplify<{
-  [K in Adt[typeof DISCRIMINANT]]: (payload: Payload<Adt, K>) => Simplify<Adt & { [DISCRIMINANT]: K }>;
+  [K in Adt[typeof DISCRIMINANT]]: <const T extends Payload<Adt, K>>(payload: T) => Simplify<T & { [DISCRIMINANT]: K }>;
 }>;
 export function createCtors<Adt extends { [DISCRIMINANT]: string }>(): Ctors<Adt> {
   return new Proxy(
