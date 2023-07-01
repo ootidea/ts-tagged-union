@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/ootidea/algebraic-data-type/issues"
   },
-  "homepage": "https://github.com/ootidea/algebraic-data-type#readme"
+  "homepage": "https://github.com/ootidea/algebraic-data-type#readme",
+  "volta": {
+    "node": "18.12.1"
+  }
 }
