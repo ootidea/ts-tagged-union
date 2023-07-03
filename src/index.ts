@@ -24,6 +24,20 @@ export function createCtors<Adt extends { [DISCRIMINANT]: string }>(): Ctors<Adt
   ) as any;
 }
 
+type TypePredicates<Adt extends { [DISCRIMINANT]: string }> = Simplify<{
+  [K in Adt[typeof DISCRIMINANT]]: (adt: Adt) => adt is Simplify<Adt & { [DISCRIMINANT]: K }>;
+}>;
+export function createTypePredicates<Adt extends { [DISCRIMINANT]: string }>(): TypePredicates<Adt> {
+  return new Proxy(
+    {},
+    {
+      get(target, key) {
+        return (adt: Adt) => adt[DISCRIMINANT] === key;
+      },
+    },
+  ) as any;
+}
+
 export function match<
   Adt extends { [DISCRIMINANT]: string },
   Matchers extends {
