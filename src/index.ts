@@ -10,24 +10,10 @@ type Payload<Adt extends { [DISCRIMINANT]: string }, K extends Adt[typeof DISCRI
   Omit<Simplify<Adt & { [DISCRIMINANT]: K }>, typeof DISCRIMINANT>
 >;
 
-type Ctors<Adt extends { [DISCRIMINANT]: string }> = Simplify<{
-  [K in Adt[typeof DISCRIMINANT]]: <const T extends Payload<Adt, K>>(payload: T) => Simplify<T & { [DISCRIMINANT]: K }>;
-}>;
-export function createCtors<Adt extends { [DISCRIMINANT]: string }>(): Ctors<Adt> {
-  return new Proxy(
-    {},
-    {
-      get(target, key) {
-        return (value: object) => ({ ...value, [DISCRIMINANT]: key });
-      },
-    },
-  ) as any;
-}
-
 type TypePredicates<Adt extends { [DISCRIMINANT]: string }> = Simplify<{
   [K in Adt[typeof DISCRIMINANT]]: (adt: Adt) => adt is Simplify<Adt & { [DISCRIMINANT]: K }>;
 }>;
-export function createTypePredicates<Adt extends { [DISCRIMINANT]: string }>(): TypePredicates<Adt> {
+function createTypePredicates<Adt extends { [DISCRIMINANT]: string }>(): TypePredicates<Adt> {
   return new Proxy(
     {},
     {
@@ -38,7 +24,7 @@ export function createTypePredicates<Adt extends { [DISCRIMINANT]: string }>(): 
   ) as any;
 }
 
-export function match<
+function match<
   Adt extends { [DISCRIMINANT]: string },
   Matchers extends {
     [K in Adt[typeof DISCRIMINANT]]: (payload: Payload<Adt, K>) => unknown;
