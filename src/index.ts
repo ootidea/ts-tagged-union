@@ -46,3 +46,25 @@ export function match<
 >(adt: Adt, matchers: Matchers): ReturnType<Matchers[keyof Matchers]> {
   return (matchers as any)[adt[DISCRIMINANT]](adt);
 }
+
+export function operatorsOf<Adt extends { [DISCRIMINANT]: string }>(): Simplify<
+  {
+    match: typeof match;
+    is: TypePredicates<Adt>;
+  } & {
+    [K in Adt[typeof DISCRIMINANT]]: <const T extends Payload<Adt, K>>(
+      payload: T,
+    ) => Simplify<T & { [DISCRIMINANT]: K }>;
+  }
+> {
+  return new Proxy(
+    { match, is: createTypePredicates<Adt>() },
+    {
+      get(target, key) {
+        if (Reflect.has(target, key)) return Reflect.get(target, key);
+
+        return (value: object) => ({ ...value, [DISCRIMINANT]: key });
+      },
+    },
+  ) as any;
+}
