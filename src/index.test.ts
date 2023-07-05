@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { DISCRIMINANT, operatorsOf, TaggedUnion } from './index';
+import { operatorsOf, TAG_KEY, TaggedUnion } from './index';
 
 describe('operatorsOf', () => {
   type Shape = TaggedUnion<{ Rect: { width: number; height: number }; Circle: { radius: number } }>;
@@ -7,7 +7,7 @@ describe('operatorsOf', () => {
   const circle = Shape.Circle({ radius: 3 }) as Shape;
 
   test('Data constructors', () => {
-    expect(Shape.Circle({ radius: 3 })).toStrictEqual({ [DISCRIMINANT]: 'Circle', radius: 3 });
+    expect(Shape.Circle({ radius: 3 })).toStrictEqual({ [TAG_KEY]: 'Circle', radius: 3 });
   });
 
   test('Type predicates', () => {
