@@ -1,14 +1,14 @@
 {
-  "name": "algebraic-data-type",
+  "name": "ts-tagged-union",
   "version": "0.0.0",
   "description": "",
-  "homepage": "https://github.com/ootidea/algebraic-data-type#readme",
+  "homepage": "https://github.com/ootidea/ts-tagged-union#readme",
   "bugs": {
-    "url": "https://github.com/ootidea/algebraic-data-type/issues"
+    "url": "https://github.com/ootidea/ts-tagged-union/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ootidea/algebraic-data-type.git"
+    "url": "git+https://github.com/ootidea/ts-tagged-union.git"
   },
   "license": "CC0-1.0",
   "author": "ootidea",

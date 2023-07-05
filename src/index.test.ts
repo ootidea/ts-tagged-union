@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest';
-import { AlgebraicDataType, DISCRIMINANT, operatorsOf } from './index';
+import { DISCRIMINANT, operatorsOf, TaggedUnion } from './index';
 
 describe('operatorsOf', () => {
-  type Shape = AlgebraicDataType<{ Rect: { width: number; height: number }; Circle: { radius: number } }>;
+  type Shape = TaggedUnion<{ Rect: { width: number; height: number }; Circle: { radius: number } }>;
   const Shape = operatorsOf<Shape>();
   const circle = Shape.Circle({ radius: 3 }) as Shape;
 

@@ -1,4 +1,4 @@
-# algebraic-data-type
+# ts-tagged-union
 
 A TypeScript library for using algebraic data types, discriminated union types and tagged union types.  
 You can generate the following basic functions for the defined algebraic data types.  
@@ -9,9 +9,9 @@ You can generate the following basic functions for the defined algebraic data ty
 ## Basic example
 
 ```typescript
-import { type AlgebraicDataType, operatorsOf } from 'algebraic-data-type';
+import { type TaggedUnion, operatorsOf } from 'ts-tagged-union';
 
-export type Shape = AlgebraicDataType<{
+export type Shape = TaggedUnion<{
   Circle: { radius: number };
   Rect: { width: number; height: number };
 }>;
