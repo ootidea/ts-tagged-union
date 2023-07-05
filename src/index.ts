@@ -10,10 +10,10 @@ type Payload<Adt extends { [TAG_KEY]: string }, K extends Adt[typeof TAG_KEY]> =
   Omit<Simplify<Adt & { [TAG_KEY]: K }>, typeof TAG_KEY>
 >;
 
-type TypePredicates<Adt extends { [TAG_KEY]: string }> = Simplify<{
+type Is<Adt extends { [TAG_KEY]: string }> = Simplify<{
   [K in Adt[typeof TAG_KEY]]: (adt: Adt) => adt is Simplify<Adt & { [TAG_KEY]: K }>;
 }>;
-function createTypePredicates<Adt extends { [TAG_KEY]: string }>(): TypePredicates<Adt> {
+function createIs<Adt extends { [TAG_KEY]: string }>(): Is<Adt> {
   return new Proxy(
     {},
     {
@@ -34,7 +34,7 @@ export function operatorsOf<Adt extends { [TAG_KEY]: string }>(): Simplify<
       adt: Adt,
       matchers: Matchers,
     ) => ReturnType<Matchers[keyof Matchers]>;
-    is: TypePredicates<Adt>;
+    is: Is<Adt>;
   } & {
     [K in Adt[typeof TAG_KEY]]: <const T extends Payload<Adt, K>>(payload: T) => Simplify<T & { [TAG_KEY]: K }>;
   }
@@ -51,7 +51,7 @@ export function operatorsOf<Adt extends { [TAG_KEY]: string }>(): Simplify<
       ): ReturnType<Matchers[keyof Matchers]> => {
         return (matchers as any)[adt[TAG_KEY]](adt);
       },
-      is: createTypePredicates<Adt>(),
+      is: createIs<Adt>(),
     },
     {
       get(target, key) {
