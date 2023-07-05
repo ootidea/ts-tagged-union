@@ -24,15 +24,6 @@ function createTypePredicates<Adt extends { [DISCRIMINANT]: string }>(): TypePre
   ) as any;
 }
 
-function match<
-  Adt extends { [DISCRIMINANT]: string },
-  Matchers extends {
-    [K in Adt[typeof DISCRIMINANT]]: (payload: Payload<Adt, K>) => unknown;
-  },
->(adt: Adt, matchers: Matchers): ReturnType<Matchers[keyof Matchers]> {
-  return (matchers as any)[adt[DISCRIMINANT]](adt);
-}
-
 export function operatorsOf<Adt extends { [DISCRIMINANT]: string }>(): Simplify<
   {
     match: <
