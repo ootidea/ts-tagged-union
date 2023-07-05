@@ -1,7 +1,15 @@
 {
   "name": "ts-tagged-union",
   "version": "0.0.0",
-  "description": "",
+  "description": "TypeScript library designed for working with tagged union types, also known as discriminated union types. It can generate the following helper functions for any tagged union type.",
+  "keywords": [
+    "Algebraic-Data-Types",
+    "discriminated-union",
+    "pattern-matching",
+    "haskell",
+    "functional-programming",
+    "functional"
+  ],
   "homepage": "https://github.com/ootidea/ts-tagged-union#readme",
   "bugs": {
     "url": "https://github.com/ootidea/ts-tagged-union/issues"
