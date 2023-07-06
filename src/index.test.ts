@@ -26,13 +26,16 @@ describe('operatorsOf', () => {
 })
 
 describe('defineTaggedUnion', () => {
-  const Response = defineTaggedUnion<{ Success: { payload: Blob }; Failure: { message: string } }>().withTagKey('type')
+  const Response = defineTaggedUnion<{
+    Success: { payload: Blob }
+    Failure: { message: string }
+  }>().withTagKey('status')
   type Response = ExtractTaggedUnionType<typeof Response>
   const success = Response.Success({ payload: new Blob() }) as Response
 
   test('Data constructors', () => {
-    expect(Response.Success({ payload: new Blob() })).toStrictEqual({ type: 'Success', payload: new Blob() })
-    expect(Response.Failure({ message: 'error' })).toStrictEqual({ type: 'Failure', message: 'error' })
+    expect(Response.Success({ payload: new Blob() })).toStrictEqual({ status: 'Success', payload: new Blob() })
+    expect(Response.Failure({ message: 'error' })).toStrictEqual({ status: 'Failure', message: 'error' })
   })
 
   test('Type predicates', () => {
