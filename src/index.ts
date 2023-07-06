@@ -6,52 +6,54 @@ export type TaggedUnion<T extends Record<string, any>, D extends keyof any = typ
 
 type Simplify<T> = T extends T ? { [K in keyof T]: T[K] } : never
 
-type Payload<Adt extends { [TAG_KEY]: string }, K extends Adt[typeof TAG_KEY]> = Simplify<
-  Omit<Simplify<Adt & { [TAG_KEY]: K }>, typeof TAG_KEY>
+type Payload<TaggedUnion extends { [TAG_KEY]: string }, K extends TaggedUnion[typeof TAG_KEY]> = Simplify<
+  Omit<Simplify<TaggedUnion & { [TAG_KEY]: K }>, typeof TAG_KEY>
 >
 
-type Is<Adt extends Record<D, string>, D extends keyof any = typeof TAG_KEY> = Simplify<{
-  [K in Adt[D]]: (adt: Adt) => adt is Simplify<Adt & Record<D, K>>
+type Is<TaggedUnion extends Record<D, string>, D extends keyof any = typeof TAG_KEY> = Simplify<{
+  [K in TaggedUnion[D]]: (taggedUnion: TaggedUnion) => taggedUnion is Simplify<TaggedUnion & Record<D, K>>
 }>
-function createIs<Adt extends Record<D, string>, D extends keyof any>(tagKey: D): Is<Adt, D> {
+function createIs<TaggedUnion extends Record<D, string>, D extends keyof any>(tagKey: D): Is<TaggedUnion, D> {
   return new Proxy(
     {},
     {
       get(target, key) {
-        return (adt: Adt) => adt[tagKey] === key
+        return (taggedUnion: TaggedUnion) => taggedUnion[tagKey] === key
       },
     },
   ) as any
 }
 
-export function operatorsOf<Adt extends { [TAG_KEY]: string }>(): Simplify<
+export function operatorsOf<TaggedUnion extends { [TAG_KEY]: string }>(): Simplify<
   {
     match: <
       Matchers extends {
-        [K in Adt[typeof TAG_KEY]]: (payload: Payload<Adt, K>) => unknown
+        [K in TaggedUnion[typeof TAG_KEY]]: (payload: Payload<TaggedUnion, K>) => unknown
       },
     >(
-      adt: Adt,
+      taggedUnion: TaggedUnion,
       matchers: Matchers,
     ) => ReturnType<Matchers[keyof Matchers]>
-    is: Is<Adt>
+    is: Is<TaggedUnion>
   } & {
-    [K in Adt[typeof TAG_KEY]]: <const T extends Payload<Adt, K>>(payload: T) => Simplify<T & { [TAG_KEY]: K }>
+    [K in TaggedUnion[typeof TAG_KEY]]: <const T extends Payload<TaggedUnion, K>>(
+      payload: T,
+    ) => Simplify<T & { [TAG_KEY]: K }>
   }
 > {
   return new Proxy(
     {
       match: <
         Matchers extends {
-          [K in Adt[typeof TAG_KEY]]: (payload: Payload<Adt, K>) => unknown
+          [K in TaggedUnion[typeof TAG_KEY]]: (payload: Payload<TaggedUnion, K>) => unknown
         },
       >(
-        adt: Adt,
+        taggedUnion: TaggedUnion,
         matchers: Matchers,
       ): ReturnType<Matchers[keyof Matchers]> => {
-        return (matchers as any)[adt[TAG_KEY]](adt)
+        return (matchers as any)[taggedUnion[TAG_KEY]](taggedUnion)
       },
-      is: createIs<Adt, typeof TAG_KEY>(TAG_KEY),
+      is: createIs<TaggedUnion, typeof TAG_KEY>(TAG_KEY),
     },
     {
       get(target, key) {
@@ -69,7 +71,7 @@ export function defineTaggedUnion<const Payloads extends Record<string, any>>():
   ) => Simplify<
     {
       match: <Matchers extends { [K in keyof Payloads]: (payload: Payloads[K]) => unknown }>(
-        adt: TaggedUnion<Payloads, D>,
+        taggedUnion: TaggedUnion<Payloads, D>,
         matchers: Matchers,
       ) => ReturnType<Matchers[keyof Matchers]>
       is: Is<TaggedUnion<Payloads, D>, D>
@@ -84,8 +86,8 @@ export function defineTaggedUnion<const Payloads extends Record<string, any>>():
         Matchers extends {
           [K in keyof Payloads]: (payload: Payloads[K]) => unknown
         },
-      >(adt: TaggedUnion<Payloads, D>, matchers: Matchers): ReturnType<Matchers[keyof Matchers]> {
-        return (matchers as any)[adt[tagKey]](adt)
+      >(taggedUnion: TaggedUnion<Payloads, D>, matchers: Matchers): ReturnType<Matchers[keyof Matchers]> {
+        return (matchers as any)[taggedUnion[tagKey]](taggedUnion)
       }
 
       return new Proxy(
@@ -105,4 +107,6 @@ export function defineTaggedUnion<const Payloads extends Record<string, any>>():
   } as any
 }
 
-export type ExtractTaggedUnionType<T extends { match: (adt: any, matchers: any) => any }> = Parameters<T['match']>[0]
+export type ExtractTaggedUnionType<T extends { match: (taggedUnion: any, matchers: any) => any }> = Parameters<
+  T['match']
+>[0]
