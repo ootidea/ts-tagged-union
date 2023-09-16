@@ -7,9 +7,10 @@ export type TaggedUnion<T extends Record<string, any>, D extends keyof any = typ
 type Simplify<T> = T extends T ? { [K in keyof T]: T[K] } : never
 
 type PayloadOf<
-  TaggedUnion extends { [TAG_KEY]: string },
-  K extends TaggedUnion[typeof TAG_KEY],
-> = Simplify<Omit<Simplify<TaggedUnion & { [TAG_KEY]: K }>, typeof TAG_KEY>>
+  TaggedUnion extends Record<TagKey, string>,
+  TagKey extends keyof any,
+  K extends TaggedUnion[TagKey],
+> = Simplify<Omit<Simplify<TaggedUnion & Record<TagKey, K>>, TagKey>>
 
 type Is<TaggedUnion extends Record<D, string>, D extends keyof any = typeof TAG_KEY> = Simplify<{
   [K in TaggedUnion[D]]: (
@@ -29,28 +30,35 @@ function createIs<TaggedUnion extends Record<D, string>, D extends keyof any>(
   ) as any
 }
 
-export function operatorsOf<TaggedUnion extends { [TAG_KEY]: string }>(): Simplify<
+type OperatorsOf<
+  TaggedUnion extends Record<TagKey, string>,
+  TagKey extends keyof any = typeof TAG_KEY,
+> = Simplify<
   {
     match: <
       Cases extends {
-        [K in TaggedUnion[typeof TAG_KEY]]: (payload: PayloadOf<TaggedUnion, K>) => unknown
+        [K in TaggedUnion[TagKey]]: (payload: PayloadOf<TaggedUnion, TagKey, K>) => unknown
       },
     >(
       taggedUnion: TaggedUnion,
       cases: Cases,
     ) => ReturnType<Cases[keyof Cases]>
-    is: Is<TaggedUnion>
+    is: Is<TaggedUnion, TagKey>
   } & {
-    [K in TaggedUnion[typeof TAG_KEY]]: <const T extends PayloadOf<TaggedUnion, K>>(
-      payload: T,
-    ) => Simplify<T & { [TAG_KEY]: K }>
+    [K in TaggedUnion[TagKey]]: (
+      payload: PayloadOf<TaggedUnion, TagKey, K>,
+    ) => Simplify<PayloadOf<TaggedUnion, TagKey, K> & { [TAG_KEY]: K }>
   }
-> {
+>
+
+export function operatorsOf<TaggedUnion extends { [TAG_KEY]: string }>(): OperatorsOf<TaggedUnion> {
   return new Proxy(
     {
       match: <
         Cases extends {
-          [K in TaggedUnion[typeof TAG_KEY]]: (payload: PayloadOf<TaggedUnion, K>) => unknown
+          [K in TaggedUnion[typeof TAG_KEY]]: (
+            payload: PayloadOf<TaggedUnion, typeof TAG_KEY, K>,
+          ) => unknown
         },
       >(
         taggedUnion: TaggedUnion,
@@ -71,7 +79,7 @@ export function operatorsOf<TaggedUnion extends { [TAG_KEY]: string }>(): Simpli
 }
 
 export function defineTaggedUnion<const Payloads extends Record<string, any>>(): {
-  withTagKey: <const TagKey extends keyof any>(
+  withTagKey: <TagKey extends keyof any>(
     tagKey: TagKey,
   ) => Simplify<
     {
@@ -81,14 +89,12 @@ export function defineTaggedUnion<const Payloads extends Record<string, any>>():
       ) => ReturnType<Cases[keyof Cases]>
       is: Is<TaggedUnion<Payloads, TagKey>, TagKey>
     } & {
-      [K in keyof Payloads]: <const T extends Payloads[K]>(
-        payload: T,
-      ) => Simplify<T & Record<TagKey, K>>
+      [K in keyof Payloads]: (payload: Payloads[K]) => Simplify<Payloads[K] & Record<TagKey, K>>
     }
   >
 } {
   return {
-    withTagKey: <const D extends keyof any>(tagKey: D) => {
+    withTagKey: <D extends keyof any>(tagKey: D) => {
       function match<
         Cases extends {
           [K in keyof Payloads]: (payload: Payloads[K]) => unknown
