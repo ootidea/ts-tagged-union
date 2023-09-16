@@ -7,25 +7,38 @@ export type TaggedUnion<T extends Record<string, any>, TagKey extends keyof any 
 
 type Simplify<T> = T extends T ? { [K in keyof T]: T[K] } : never
 
-type PayloadOf<
-  TaggedUnion extends Record<TagKey, string>,
-  TagKey extends keyof any,
-  K extends TaggedUnion[TagKey],
-> = Omit<Extract<TaggedUnion, Record<TagKey, K>>, TagKey>
+export function createOperators<
+  TaggedUnion extends { [TAG_KEY]: string },
+>(): Operators<TaggedUnion> {
+  return createOperatorsWithTagKey<TaggedUnion, TAG_KEY>(TAG_KEY)
+}
 
-type Is<TaggedUnion extends Record<TagKey, string>, TagKey extends keyof any = TAG_KEY> = Simplify<{
-  [K in TaggedUnion[TagKey]]: (
-    taggedUnion: TaggedUnion,
-  ) => taggedUnion is Extract<TaggedUnion, Record<TagKey, K>>
-}>
-function createIs<TaggedUnion extends Record<TagKey, string>, TagKey extends keyof any>(
+export function withTagKey<TagKey extends keyof any>(
   tagKey: TagKey,
-): Is<TaggedUnion, TagKey> {
+): {
+  createOperators<TaggedUnion extends Record<TagKey, string>>(): Operators<TaggedUnion, TagKey>
+} {
+  return {
+    createOperators<TaggedUnion extends Record<TagKey, string>>(): Operators<TaggedUnion, TagKey> {
+      return createOperatorsWithTagKey<TaggedUnion, TagKey>(tagKey)
+    },
+  }
+}
+
+function createOperatorsWithTagKey<
+  TaggedUnion extends Record<TagKey, string>,
+  TagKey extends keyof any = TAG_KEY,
+>(tagKey: TagKey): Operators<TaggedUnion, TagKey> {
   return new Proxy(
-    {},
+    {
+      match: createMatch<TaggedUnion, TagKey>(tagKey),
+      is: createIs<TaggedUnion, TagKey>(tagKey),
+    },
     {
       get(target, key) {
-        return (taggedUnion: TaggedUnion) => taggedUnion[tagKey] === key
+        if (Reflect.has(target, key)) return Reflect.get(target, key)
+
+        return (value: object) => ({ ...value, [tagKey]: key })
       },
     },
   ) as any
@@ -52,6 +65,25 @@ type Operators<
   }
 >
 
+function createIs<TaggedUnion extends Record<TagKey, string>, TagKey extends keyof any>(
+  tagKey: TagKey,
+): Is<TaggedUnion, TagKey> {
+  return new Proxy(
+    {},
+    {
+      get(target, key) {
+        return (taggedUnion: TaggedUnion) => taggedUnion[tagKey] === key
+      },
+    },
+  ) as any
+}
+
+type Is<TaggedUnion extends Record<TagKey, string>, TagKey extends keyof any = TAG_KEY> = Simplify<{
+  [K in TaggedUnion[TagKey]]: (
+    taggedUnion: TaggedUnion,
+  ) => taggedUnion is Extract<TaggedUnion, Record<TagKey, K>>
+}>
+
 const createMatch =
   <TaggedUnion extends Record<TagKey, string>, TagKey extends keyof any>(tagKey: TagKey) =>
   <
@@ -65,39 +97,8 @@ const createMatch =
     return (cases as any)[taggedUnion[tagKey]](taggedUnion)
   }
 
-export function createOperators<
-  TaggedUnion extends { [TAG_KEY]: string },
->(): Operators<TaggedUnion> {
-  return createOperatorsWithTagKey<TaggedUnion, TAG_KEY>(TAG_KEY)
-}
-
-function createOperatorsWithTagKey<
+type PayloadOf<
   TaggedUnion extends Record<TagKey, string>,
-  TagKey extends keyof any = TAG_KEY,
->(tagKey: TagKey): Operators<TaggedUnion, TagKey> {
-  return new Proxy(
-    {
-      match: createMatch<TaggedUnion, TagKey>(tagKey),
-      is: createIs<TaggedUnion, TagKey>(tagKey),
-    },
-    {
-      get(target, key) {
-        if (Reflect.has(target, key)) return Reflect.get(target, key)
-
-        return (value: object) => ({ ...value, [tagKey]: key })
-      },
-    },
-  ) as any
-}
-
-export function withTagKey<TagKey extends keyof any>(
-  tagKey: TagKey,
-): {
-  createOperators<TaggedUnion extends Record<TagKey, string>>(): Operators<TaggedUnion, TagKey>
-} {
-  return {
-    createOperators<TaggedUnion extends Record<TagKey, string>>(): Operators<TaggedUnion, TagKey> {
-      return createOperatorsWithTagKey<TaggedUnion, TagKey>(tagKey)
-    },
-  }
-}
+  TagKey extends keyof any,
+  K extends TaggedUnion[TagKey],
+> = Omit<Extract<TaggedUnion, Record<TagKey, K>>, TagKey>
