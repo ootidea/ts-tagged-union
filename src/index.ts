@@ -1,7 +1,10 @@
 export const TAG_KEY = Symbol()
 
-export type TaggedUnion<T extends Record<string, any>, D extends keyof any = typeof TAG_KEY> = {
-  [K in keyof T]: Simplify<Record<D, K> & T[K]>
+export type TaggedUnion<
+  T extends Record<string, any>,
+  TagKey extends keyof any = typeof TAG_KEY,
+> = {
+  [K in keyof T]: Simplify<Record<TagKey, K> & T[K]>
 }[keyof T]
 
 type Simplify<T> = T extends T ? { [K in keyof T]: T[K] } : never
@@ -12,14 +15,17 @@ type PayloadOf<
   K extends TaggedUnion[TagKey],
 > = Omit<Extract<TaggedUnion, Record<TagKey, K>>, TagKey>
 
-type Is<TaggedUnion extends Record<D, string>, D extends keyof any = typeof TAG_KEY> = Simplify<{
-  [K in TaggedUnion[D]]: (
+type Is<
+  TaggedUnion extends Record<TagKey, string>,
+  TagKey extends keyof any = typeof TAG_KEY,
+> = Simplify<{
+  [K in TaggedUnion[TagKey]]: (
     taggedUnion: TaggedUnion,
-  ) => taggedUnion is Extract<TaggedUnion, Record<D, K>>
+  ) => taggedUnion is Extract<TaggedUnion, Record<TagKey, K>>
 }>
-function createIs<TaggedUnion extends Record<D, string>, D extends keyof any>(
-  tagKey: D,
-): Is<TaggedUnion, D> {
+function createIs<TaggedUnion extends Record<TagKey, string>, TagKey extends keyof any>(
+  tagKey: TagKey,
+): Is<TaggedUnion, TagKey> {
   return new Proxy(
     {},
     {
