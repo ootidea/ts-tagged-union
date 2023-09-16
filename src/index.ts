@@ -82,29 +82,33 @@ export function createOperators<
   ) as any
 }
 
-export function defineTaggedUnion<const Payloads extends Record<string, any>>(): {
-  withTagKey: <TagKey extends keyof any>(
-    tagKey: TagKey,
-  ) => Operators<TaggedUnion<Payloads, TagKey>, TagKey>
-} {
-  return {
-    withTagKey: <D extends keyof any>(tagKey: D) => {
-      return new Proxy(
-        {
-          match: createMatch<TaggedUnion<Payloads, D>, D>(tagKey),
-          is: createIs<TaggedUnion<Payloads, D>, D>(tagKey),
-        },
-        {
-          get(target, key) {
-            if (Reflect.has(target, key)) return Reflect.get(target, key)
-
-            return (value: object) => ({ ...value, [tagKey]: key })
-          },
-        },
-      )
+function createOperatorsWithTagKey<
+  TaggedUnion extends Record<TagKey, string>,
+  TagKey extends keyof any = typeof TAG_KEY,
+>(tagKey: TagKey): Operators<TaggedUnion, TagKey> {
+  return new Proxy(
+    {
+      match: createMatch<TaggedUnion, TagKey>(tagKey),
+      is: createIs<TaggedUnion, TagKey>(tagKey),
     },
-  } as any
+    {
+      get(target, key) {
+        if (Reflect.has(target, key)) return Reflect.get(target, key)
+
+        return (value: object) => ({ ...value, [tagKey]: key })
+      },
+    },
+  ) as any
 }
 
-export type ExtractTaggedUnionType<T extends { match: (taggedUnion: any, cases: any) => any }> =
-  Parameters<T['match']>[0]
+export function withTagKey<TagKey extends keyof any>(
+  tagKey: TagKey,
+): {
+  createOperators<TaggedUnion extends Record<TagKey, string>>(): Operators<TaggedUnion, TagKey>
+} {
+  return {
+    createOperators<TaggedUnion extends Record<TagKey, string>>(): Operators<TaggedUnion, TagKey> {
+      return createOperatorsWithTagKey<TaggedUnion, TagKey>(tagKey)
+    },
+  }
+}

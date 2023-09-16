@@ -1,11 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import {
-  createOperators,
-  defineTaggedUnion,
-  ExtractTaggedUnionType,
-  TAG_KEY,
-  TaggedUnion,
-} from './index'
+import { createOperators, TAG_KEY, TaggedUnion, withTagKey } from './index'
 
 describe('createOperators', () => {
   type Shape = TaggedUnion<{ Rect: { width: number; height: number }; Circle: { radius: number } }>
@@ -31,12 +25,16 @@ describe('createOperators', () => {
   })
 })
 
-describe('defineTaggedUnion', () => {
-  const Response = defineTaggedUnion<{
-    Success: { payload: Blob }
-    Failure: { message: string }
-  }>().withTagKey('status')
-  type Response = ExtractTaggedUnionType<typeof Response>
+describe('withTagKey', () => {
+  type Response = TaggedUnion<
+    {
+      Success: { payload: Blob }
+      Failure: { message: string }
+    },
+    'status'
+  >
+  const Response = withTagKey('status').createOperators<Response>()
+
   const success = Response.Success({ payload: new Blob() }) as Response
 
   test('Data constructors', () => {
