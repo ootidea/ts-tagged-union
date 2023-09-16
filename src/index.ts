@@ -67,19 +67,7 @@ const createMatch =
 export function createOperators<
   TaggedUnion extends { [TAG_KEY]: string },
 >(): Operators<TaggedUnion> {
-  return new Proxy(
-    {
-      match: createMatch<TaggedUnion, typeof TAG_KEY>(TAG_KEY),
-      is: createIs<TaggedUnion, typeof TAG_KEY>(TAG_KEY),
-    },
-    {
-      get(target, key) {
-        if (Reflect.has(target, key)) return Reflect.get(target, key)
-
-        return (value: object) => ({ ...value, [TAG_KEY]: key })
-      },
-    },
-  ) as any
+  return createOperatorsWithTagKey<TaggedUnion, typeof TAG_KEY>(TAG_KEY)
 }
 
 function createOperatorsWithTagKey<
