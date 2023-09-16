@@ -1,9 +1,15 @@
 import { describe, expect, test } from 'vitest'
-import { defineTaggedUnion, ExtractTaggedUnionType, operatorsOf, TAG_KEY, TaggedUnion } from './index'
+import {
+  createOperators,
+  defineTaggedUnion,
+  ExtractTaggedUnionType,
+  TAG_KEY,
+  TaggedUnion,
+} from './index'
 
-describe('operatorsOf', () => {
+describe('createOperators', () => {
   type Shape = TaggedUnion<{ Rect: { width: number; height: number }; Circle: { radius: number } }>
-  const Shape = operatorsOf<Shape>()
+  const Shape = createOperators<Shape>()
   const circle = Shape.Circle({ radius: 3 }) as Shape
 
   test('Data constructors', () => {
@@ -34,8 +40,14 @@ describe('defineTaggedUnion', () => {
   const success = Response.Success({ payload: new Blob() }) as Response
 
   test('Data constructors', () => {
-    expect(Response.Success({ payload: new Blob() })).toStrictEqual({ status: 'Success', payload: new Blob() })
-    expect(Response.Failure({ message: 'error' })).toStrictEqual({ status: 'Failure', message: 'error' })
+    expect(Response.Success({ payload: new Blob() })).toStrictEqual({
+      status: 'Success',
+      payload: new Blob(),
+    })
+    expect(Response.Failure({ message: 'error' })).toStrictEqual({
+      status: 'Failure',
+      message: 'error',
+    })
   })
 
   test('Type predicates', () => {

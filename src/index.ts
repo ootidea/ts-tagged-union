@@ -30,7 +30,7 @@ function createIs<TaggedUnion extends Record<D, string>, D extends keyof any>(
   ) as any
 }
 
-type OperatorsOf<
+type Operators<
   TaggedUnion extends Record<TagKey, string>,
   TagKey extends keyof any = typeof TAG_KEY,
 > = Simplify<
@@ -64,7 +64,9 @@ const createMatch =
     return (cases as any)[taggedUnion[tagKey]](taggedUnion)
   }
 
-export function operatorsOf<TaggedUnion extends { [TAG_KEY]: string }>(): OperatorsOf<TaggedUnion> {
+export function createOperators<
+  TaggedUnion extends { [TAG_KEY]: string },
+>(): Operators<TaggedUnion> {
   return new Proxy(
     {
       match: createMatch<TaggedUnion, typeof TAG_KEY>(TAG_KEY),
@@ -83,7 +85,7 @@ export function operatorsOf<TaggedUnion extends { [TAG_KEY]: string }>(): Operat
 export function defineTaggedUnion<const Payloads extends Record<string, any>>(): {
   withTagKey: <TagKey extends keyof any>(
     tagKey: TagKey,
-  ) => OperatorsOf<TaggedUnion<Payloads, TagKey>, TagKey>
+  ) => Operators<TaggedUnion<Payloads, TagKey>, TagKey>
 } {
   return {
     withTagKey: <D extends keyof any>(tagKey: D) => {
