@@ -32,13 +32,13 @@ function createIs<TaggedUnion extends Record<D, string>, D extends keyof any>(
 export function operatorsOf<TaggedUnion extends { [TAG_KEY]: string }>(): Simplify<
   {
     match: <
-      Matchers extends {
+      Cases extends {
         [K in TaggedUnion[typeof TAG_KEY]]: (payload: PayloadOf<TaggedUnion, K>) => unknown
       },
     >(
       taggedUnion: TaggedUnion,
-      matchers: Matchers,
-    ) => ReturnType<Matchers[keyof Matchers]>
+      cases: Cases,
+    ) => ReturnType<Cases[keyof Cases]>
     is: Is<TaggedUnion>
   } & {
     [K in TaggedUnion[typeof TAG_KEY]]: <const T extends PayloadOf<TaggedUnion, K>>(
@@ -49,14 +49,14 @@ export function operatorsOf<TaggedUnion extends { [TAG_KEY]: string }>(): Simpli
   return new Proxy(
     {
       match: <
-        Matchers extends {
+        Cases extends {
           [K in TaggedUnion[typeof TAG_KEY]]: (payload: PayloadOf<TaggedUnion, K>) => unknown
         },
       >(
         taggedUnion: TaggedUnion,
-        matchers: Matchers,
-      ): ReturnType<Matchers[keyof Matchers]> => {
-        return (matchers as any)[taggedUnion[TAG_KEY]](taggedUnion)
+        cases: Cases,
+      ): ReturnType<Cases[keyof Cases]> => {
+        return (cases as any)[taggedUnion[TAG_KEY]](taggedUnion)
       },
       is: createIs<TaggedUnion, typeof TAG_KEY>(TAG_KEY),
     },
@@ -75,10 +75,10 @@ export function defineTaggedUnion<const Payloads extends Record<string, any>>():
     tagKey: D,
   ) => Simplify<
     {
-      match: <Matchers extends { [K in keyof Payloads]: (payload: Payloads[K]) => unknown }>(
+      match: <Cases extends { [K in keyof Payloads]: (payload: Payloads[K]) => unknown }>(
         taggedUnion: TaggedUnion<Payloads, D>,
-        matchers: Matchers,
-      ) => ReturnType<Matchers[keyof Matchers]>
+        cases: Cases,
+      ) => ReturnType<Cases[keyof Cases]>
       is: Is<TaggedUnion<Payloads, D>, D>
     } & {
       [K in keyof Payloads]: <const T extends Payloads[K]>(payload: T) => Simplify<T & Record<D, K>>
@@ -88,14 +88,11 @@ export function defineTaggedUnion<const Payloads extends Record<string, any>>():
   return {
     withTagKey: <const D extends keyof any>(tagKey: D) => {
       function match<
-        Matchers extends {
+        Cases extends {
           [K in keyof Payloads]: (payload: Payloads[K]) => unknown
         },
-      >(
-        taggedUnion: TaggedUnion<Payloads, D>,
-        matchers: Matchers,
-      ): ReturnType<Matchers[keyof Matchers]> {
-        return (matchers as any)[taggedUnion[tagKey]](taggedUnion)
+      >(taggedUnion: TaggedUnion<Payloads, D>, cases: Cases): ReturnType<Cases[keyof Cases]> {
+        return (cases as any)[taggedUnion[tagKey]](taggedUnion)
       }
 
       return new Proxy(
@@ -115,5 +112,5 @@ export function defineTaggedUnion<const Payloads extends Record<string, any>>():
   } as any
 }
 
-export type ExtractTaggedUnionType<T extends { match: (taggedUnion: any, matchers: any) => any }> =
+export type ExtractTaggedUnionType<T extends { match: (taggedUnion: any, cases: any) => any }> =
   Parameters<T['match']>[0]
