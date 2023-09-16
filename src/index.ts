@@ -10,12 +10,12 @@ type PayloadOf<
   TaggedUnion extends Record<TagKey, string>,
   TagKey extends keyof any,
   K extends TaggedUnion[TagKey],
-> = Simplify<Omit<Simplify<TaggedUnion & Record<TagKey, K>>, TagKey>>
+> = Omit<Extract<TaggedUnion, Record<TagKey, K>>, TagKey>
 
 type Is<TaggedUnion extends Record<D, string>, D extends keyof any = typeof TAG_KEY> = Simplify<{
   [K in TaggedUnion[D]]: (
     taggedUnion: TaggedUnion,
-  ) => taggedUnion is Simplify<TaggedUnion & Record<D, K>>
+  ) => taggedUnion is Extract<TaggedUnion, Record<D, K>>
 }>
 function createIs<TaggedUnion extends Record<D, string>, D extends keyof any>(
   tagKey: D,
@@ -47,7 +47,7 @@ type Operators<
   } & {
     [K in TaggedUnion[TagKey]]: (
       payload: PayloadOf<TaggedUnion, TagKey, K>,
-    ) => Simplify<PayloadOf<TaggedUnion, TagKey, K> & Record<TagKey, K>>
+    ) => Extract<TaggedUnion, Record<TagKey, K>>
   }
 >
 
