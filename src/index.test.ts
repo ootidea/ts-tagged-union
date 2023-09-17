@@ -1,14 +1,14 @@
 import { describe, expect, expectTypeOf, test } from 'vitest'
-import { createOperators, TAG_KEY, TaggedUnion, withTagKey } from './index'
+import { helperFunctionsOf, TAG_KEY, TaggedUnion, withTagKey } from './index'
 
-describe('createOperators', () => {
+describe('helperFunctionsOf', () => {
   type Shape = TaggedUnion<{ rect: { width: number; height: number }; circle: { radius: number } }>
-  const Shape = createOperators<Shape>()
+  const Shape = helperFunctionsOf<Shape>()
   const circle = Shape.circle({ radius: 3 }) as Shape
 
   // Recursive type
   type NaturalNumber = TaggedUnion<{ Zero: {}; Succ: { pred: NaturalNumber } }>
-  const NaturalNumber = createOperators<NaturalNumber>()
+  const NaturalNumber = helperFunctionsOf<NaturalNumber>()
   const zero = NaturalNumber.Zero()
   const one = NaturalNumber.Succ({ pred: zero })
 
@@ -20,7 +20,7 @@ describe('createOperators', () => {
     },
     'status'
   >
-  const Response = withTagKey('status').createOperators<Response>()
+  const Response = withTagKey('status').helperFunctionsOf<Response>()
   const success = Response.Success({ payload: new Blob() }) as Response
 
   test('Data constructors', () => {

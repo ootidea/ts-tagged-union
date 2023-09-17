@@ -40,10 +40,10 @@ export type TaggedUnion<
  */
 type Simplify<T> = T extends T ? { [K in keyof T]: T[K] } : never
 
-export function createOperators<
+export function helperFunctionsOf<
   TaggedUnion extends { [TAG_KEY]: string | symbol },
->(): Operators<TaggedUnion> {
-  return createOperatorsWithTagKey<TaggedUnion, TAG_KEY>(TAG_KEY)
+>(): HelperFunctions<TaggedUnion> {
+  return createHelperFunctionsWithTagKey<TaggedUnion, TAG_KEY>(TAG_KEY)
 }
 
 /**
@@ -55,30 +55,30 @@ export function createOperators<
  *   },
  *   'type'
  * >
- * const Shape = withTagKey('type').createOperators<Shape>()
+ * const Shape = withTagKey('type').helperFunctionsOf<Shape>()
  */
 export function withTagKey<TagKey extends keyof any>(
   tagKey: TagKey,
 ): {
-  createOperators<TaggedUnion extends Record<TagKey, string | symbol>>(): Operators<
+  helperFunctionsOf<TaggedUnion extends Record<TagKey, string | symbol>>(): HelperFunctions<
     TaggedUnion,
     TagKey
   >
 } {
   return {
-    createOperators<TaggedUnion extends Record<TagKey, string | symbol>>(): Operators<
+    helperFunctionsOf<TaggedUnion extends Record<TagKey, string | symbol>>(): HelperFunctions<
       TaggedUnion,
       TagKey
     > {
-      return createOperatorsWithTagKey<TaggedUnion, TagKey>(tagKey)
+      return createHelperFunctionsWithTagKey<TaggedUnion, TagKey>(tagKey)
     },
   }
 }
 
-function createOperatorsWithTagKey<
+function createHelperFunctionsWithTagKey<
   TaggedUnion extends Record<TagKey, string | symbol>,
   TagKey extends keyof any = TAG_KEY,
->(tagKey: TagKey): Operators<TaggedUnion, TagKey> {
+>(tagKey: TagKey): HelperFunctions<TaggedUnion, TagKey> {
   return new Proxy(
     {
       match: createMatch<TaggedUnion, TagKey>(tagKey),
@@ -94,7 +94,7 @@ function createOperatorsWithTagKey<
   ) as any
 }
 
-type Operators<
+type HelperFunctions<
   TaggedUnion extends Record<TagKey, string | symbol>,
   TagKey extends keyof any = TAG_KEY,
 > = Simplify<

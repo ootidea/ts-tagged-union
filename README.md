@@ -11,7 +11,7 @@ This library can be described as an implementation of [algebraic data types](htt
 ## Basic example
 
 ```typescript
-import { type TaggedUnion, createOperators } from 'ts-tagged-union'
+import { type TaggedUnion, helperFunctionsOf } from 'ts-tagged-union'
 
 // Define a tagged union type
 export type Shape = TaggedUnion<{
@@ -19,7 +19,7 @@ export type Shape = TaggedUnion<{
   rect: { width: number; height: number }
 }>
 // Obtain helper functions
-export const Shape = createOperators<Shape>()
+export const Shape = helperFunctionsOf<Shape>()
 
 // Data constructors
 const shape = Math.random() < 0.5 ? Shape.circle({ radius: 4 }) : Shape.rect({ width: 6, height: 8 })
@@ -55,5 +55,5 @@ type Response = TaggedUnion<
   'status'
 >
 // You need to call the withTagKey function for a custom tag key.
-const Response = withTagKey('status').createOperators<Response>()
+const Response = withTagKey('status').helperFunctionsOf<Response>()
 ```
