@@ -1,10 +1,40 @@
+/** Default tag key */
 export const TAG_KEY = Symbol('TAG_KEY')
+/** Type of default tag key */
 export type TAG_KEY = typeof TAG_KEY
 
+/**
+ * @example Default tag key
+ * type Shape = TaggedUnion<{
+ *   Circle: { radius: number }
+ *   Rect: { width: number; height: number }
+ * }>
+ * is equivalent to
+ * type Shape =
+ *   | { [TAG_KEY]: 'Circle'; radius: number }
+ *   | { [TAG_KEY]: 'Rect'; width: number; height: number }
+ *
+ * @example Custom tag key
+ * type Shape = TaggedUnion<
+ *   {
+ *     Circle: { radius: number }
+ *     Rect: { width: number; height: number }
+ *   },
+ *   'type'
+ * >
+ * is equivalent to
+ * type Shape =
+ *   | { type: 'Circle'; radius: number }
+ *   | { type: 'Rect'; width: number; height: number }
+ */
 export type TaggedUnion<T extends Record<string, any>, TagKey extends keyof any = TAG_KEY> = {
   [K in keyof T]: Simplify<Record<TagKey, K> & T[K]>
 }[keyof T]
 
+/**
+ * @example
+ * Simplify<{ a: string } & { b: number }> is equivalent to { a: string; b: number }
+ */
 type Simplify<T> = T extends T ? { [K in keyof T]: T[K] } : never
 
 export function createOperators<
@@ -13,6 +43,17 @@ export function createOperators<
   return createOperatorsWithTagKey<TaggedUnion, TAG_KEY>(TAG_KEY)
 }
 
+/**
+ * @example
+ * type Shape = TaggedUnion<
+ *   {
+ *     Circle: { radius: number }
+ *     Rect: { width: number; height: number }
+ *   },
+ *   'type'
+ * >
+ * const Shape = withTagKey('type').createOperators<Shape>()
+ */
 export function withTagKey<TagKey extends keyof any>(
   tagKey: TagKey,
 ): {
@@ -101,6 +142,16 @@ const createMatch =
     return (cases as any)[taggedUnion[tagKey]](taggedUnion)
   }
 
+/**
+ * @example
+ * type Shape = TaggedUnion<{
+ *   Circle: { radius: number }
+ *   Rect: { width: number; height: number }
+ * }>
+ * type Payload = PayloadOf<Shape, TAG_KEY, 'Circle'>
+ * is equivalent to
+ * type Payload = { radius: number }
+ */
 type PayloadOf<
   TaggedUnion extends Record<TagKey, string>,
   TagKey extends keyof any,
