@@ -99,18 +99,18 @@ describe('createOperators', () => {
         {
           rect: ({ width, height }) => width * height,
         },
-        () => 0,
+        () => NaN,
       ),
-    ).toBe(0)
+    ).toBeNaN()
 
     expect(
       Response.match(
         success,
         {
-          Failure: ({ message }) => message,
+          Success: ({ payload }) => payload.size,
         },
         () => 'unknown',
       ),
-    ).toBe('unknown')
+    ).toBe(0)
   })
 })
