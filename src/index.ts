@@ -99,14 +99,27 @@ type Operators<
   TagKey extends keyof any = TAG_KEY,
 > = Simplify<
   {
-    match: <
+    match<
       Cases extends {
         [K in TaggedUnion[TagKey]]: (payload: PayloadOf<TaggedUnion, TagKey, K>) => unknown
       },
     >(
       taggedUnion: TaggedUnion,
       cases: Cases,
-    ) => ReturnType<Cases[keyof Cases]>
+    ): ReturnType<Cases[keyof Cases]>
+    match<
+      Cases extends {
+        [K in TaggedUnion[TagKey]]?: (payload: PayloadOf<TaggedUnion, TagKey, K>) => unknown
+      },
+      DefaultCase extends (
+        payload: Omit<Extract<TaggedUnion, Record<TagKey, keyof Cases>>, TagKey>,
+      ) => unknown,
+    >(
+      taggedUnion: TaggedUnion,
+      cases: Cases,
+      defaultCase: DefaultCase,
+    ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase>
+
     is: Is<TaggedUnion, TagKey>
   } & {
     // If the payload is empty ({}), the argument can be omitted.
@@ -141,18 +154,47 @@ type Is<
   ) => taggedUnion is Extract<TaggedUnion, Record<TagKey, K>>
 }>
 
-const createMatch =
-  <TaggedUnion extends Record<TagKey, string | symbol>, TagKey extends keyof any>(tagKey: TagKey) =>
-  <
+function createMatch<TaggedUnion extends Record<TagKey, string | symbol>, TagKey extends keyof any>(
+  tagKey: TagKey,
+) {
+  function match<
     Cases extends {
       [K in TaggedUnion[TagKey]]: (payload: PayloadOf<TaggedUnion, TagKey, K>) => unknown
     },
+  >(taggedUnion: TaggedUnion, cases: Cases): ReturnType<Cases[keyof Cases]>
+  function match<
+    Cases extends {
+      [K in TaggedUnion[TagKey]]?: (payload: PayloadOf<TaggedUnion, TagKey, K>) => unknown
+    },
+    Default extends (
+      payload: Omit<Extract<TaggedUnion, Record<TagKey, keyof Cases>>, TagKey>,
+    ) => unknown,
   >(
     taggedUnion: TaggedUnion,
     cases: Cases,
-  ): ReturnType<Cases[keyof Cases]> => {
-    return (cases as any)[taggedUnion[tagKey]](taggedUnion)
+    defaultCase: Default,
+  ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<Default>
+  function match<
+    Cases extends {
+      [K in TaggedUnion[TagKey]]?: (payload: PayloadOf<TaggedUnion, TagKey, K>) => unknown
+    },
+    Default extends (
+      payload: Omit<Extract<TaggedUnion, Record<TagKey, keyof Cases>>, TagKey>,
+    ) => unknown,
+  >(
+    taggedUnion: TaggedUnion,
+    cases: Cases,
+    defaultCase?: Default,
+  ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<Default> {
+    const tagValue = taggedUnion[tagKey]
+    if (tagValue in cases) {
+      return (cases as any)[tagValue](taggedUnion)
+    }
+    return (defaultCase as any)(taggedUnion)
   }
+
+  return match
+}
 
 /**
  * @example

@@ -91,4 +91,26 @@ describe('createOperators', () => {
       }),
     ).toBe(undefined)
   })
+
+  test('match with default case', () => {
+    expect(
+      Shape.match(
+        circle,
+        {
+          rect: ({ width, height }) => width * height,
+        },
+        () => 0,
+      ),
+    ).toBe(0)
+
+    expect(
+      Response.match(
+        success,
+        {
+          Failure: ({ message }) => message,
+        },
+        () => 'unknown',
+      ),
+    ).toBe('unknown')
+  })
 })
