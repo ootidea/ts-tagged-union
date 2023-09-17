@@ -1,7 +1,7 @@
 /** Default tag key */
-export const TAG_KEY = Symbol('TAG_KEY')
+export const DEFAULT_TAG_KEY = Symbol('DEFAULT_TAG_KEY')
 /** Type of default tag key */
-export type TAG_KEY = typeof TAG_KEY
+export type DefaultTagKey = typeof DEFAULT_TAG_KEY
 
 /**
  * @example Default tag key
@@ -11,8 +11,8 @@ export type TAG_KEY = typeof TAG_KEY
  * }>
  * is equivalent to
  * type Shape =
- *   | { [TAG_KEY]: 'circle'; radius: number }
- *   | { [TAG_KEY]: 'rect'; width: number; height: number }
+ *   | { [DEFAULT_TAG_KEY]: 'circle'; radius: number }
+ *   | { [DEFAULT_TAG_KEY]: 'rect'; width: number; height: number }
  *
  * @example Custom tag key
  * type Shape = TaggedUnion<
@@ -29,7 +29,7 @@ export type TAG_KEY = typeof TAG_KEY
  */
 export type TaggedUnion<
   T extends Record<string | symbol, any>,
-  TagKey extends keyof any = TAG_KEY,
+  TagKey extends keyof any = DefaultTagKey,
 > = {
   [K in keyof T]: Simplify<Record<TagKey, K> & T[K]>
 }[keyof T]
@@ -41,9 +41,9 @@ export type TaggedUnion<
 type Simplify<T> = T extends T ? { [K in keyof T]: T[K] } : never
 
 export function helperFunctionsOf<
-  TaggedUnion extends { [TAG_KEY]: string | symbol },
+  TaggedUnion extends { [DEFAULT_TAG_KEY]: string | symbol },
 >(): HelperFunctions<TaggedUnion> {
-  return createHelperFunctionsWithTagKey<TaggedUnion, TAG_KEY>(TAG_KEY)
+  return createHelperFunctionsWithTagKey<TaggedUnion, DefaultTagKey>(DEFAULT_TAG_KEY)
 }
 
 /**
@@ -77,7 +77,7 @@ export function withTagKey<TagKey extends keyof any>(
 
 function createHelperFunctionsWithTagKey<
   TaggedUnion extends Record<TagKey, string | symbol>,
-  TagKey extends keyof any = TAG_KEY,
+  TagKey extends keyof any = DefaultTagKey,
 >(tagKey: TagKey): HelperFunctions<TaggedUnion, TagKey> {
   return new Proxy(
     {
@@ -96,7 +96,7 @@ function createHelperFunctionsWithTagKey<
 
 type HelperFunctions<
   TaggedUnion extends Record<TagKey, string | symbol>,
-  TagKey extends keyof any = TAG_KEY,
+  TagKey extends keyof any = DefaultTagKey,
 > = Simplify<
   {
     match<
@@ -145,7 +145,7 @@ function createIs<TaggedUnion extends Record<TagKey, string | symbol>, TagKey ex
 
 type Is<
   TaggedUnion extends Record<TagKey, string | symbol>,
-  TagKey extends keyof any = TAG_KEY,
+  TagKey extends keyof any = DefaultTagKey,
 > = Simplify<{
   [K in TaggedUnion[TagKey]]: (
     taggedUnion: TaggedUnion,
@@ -196,7 +196,7 @@ function createMatch<TaggedUnion extends Record<TagKey, string | symbol>, TagKey
  *   circle: { radius: number }
  *   rect: { width: number; height: number }
  * }>
- * type Payload = PayloadOf<Shape, TAG_KEY, 'circle'>
+ * type Payload = PayloadOf<Shape, DEFAULT_TAG_KEY, 'circle'>
  * is equivalent to
  * type Payload = { radius: number }
  */

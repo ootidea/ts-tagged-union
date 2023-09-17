@@ -40,7 +40,7 @@ const area = Shape.match(shape, {
 
 ## Custom tag key
 
-The default tag key is the symbol, exported as `TAG_KEY`.  
+The default tag key is the symbol, exported as `DEFAULT_TAG_KEY`.  
 You can use custom tag key by writing as follows.  
 
 ```typescript
