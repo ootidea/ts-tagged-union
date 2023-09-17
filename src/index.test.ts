@@ -6,23 +6,43 @@ describe('createOperators', () => {
   const Shape = createOperators<Shape>()
   const circle = Shape.Circle({ radius: 3 }) as Shape
 
+  // Recursive type
   type NaturalNumber = TaggedUnion<{ Zero: {}; Succ: { pred: NaturalNumber } }>
   const NaturalNumber = createOperators<NaturalNumber>()
   const zero = NaturalNumber.Zero()
   const one = NaturalNumber.Succ({ pred: zero })
 
+  // Custom tag key
+  type Response = TaggedUnion<
+    {
+      Success: { payload: Blob }
+      Failure: { message: string }
+    },
+    'status'
+  >
+  const Response = withTagKey('status').createOperators<Response>()
+  const success = Response.Success({ payload: new Blob() }) as Response
+
   test('Data constructors', () => {
     expect(circle).toStrictEqual({ [TAG_KEY]: 'Circle', radius: 3 })
 
     expect(zero).toStrictEqual({ [TAG_KEY]: 'Zero' })
+
+    expect(success).toStrictEqual({
+      status: 'Success',
+      payload: new Blob(),
+    })
   })
 
   test('Type predicates', () => {
-    expect(Shape.is.Circle(circle)).toStrictEqual(true)
-    expect(Shape.is.Rect(circle)).toStrictEqual(false)
+    expect(Shape.is.Circle(circle)).toBe(true)
+    expect(Shape.is.Rect(circle)).toBe(false)
 
-    expect(NaturalNumber.is.Zero(one)).toStrictEqual(false)
-    expect(NaturalNumber.is.Succ(one)).toStrictEqual(true)
+    expect(NaturalNumber.is.Zero(one)).toBe(false)
+    expect(NaturalNumber.is.Succ(one)).toBe(true)
+
+    expect(Response.is.Success(success)).toBe(true)
+    expect(Response.is.Failure(success)).toBe(false)
   })
 
   test('Narrowing', () => {
@@ -63,38 +83,7 @@ describe('createOperators', () => {
         Succ: ({ pred }) => pred,
       }),
     ).toStrictEqual(zero)
-  })
-})
 
-describe('withTagKey', () => {
-  type Response = TaggedUnion<
-    {
-      Success: { payload: Blob }
-      Failure: { message: string }
-    },
-    'status'
-  >
-  const Response = withTagKey('status').createOperators<Response>()
-
-  const success = Response.Success({ payload: new Blob() }) as Response
-
-  test('Data constructors', () => {
-    expect(Response.Success({ payload: new Blob() })).toStrictEqual({
-      status: 'Success',
-      payload: new Blob(),
-    })
-    expect(Response.Failure({ message: 'error' })).toStrictEqual({
-      status: 'Failure',
-      message: 'error',
-    })
-  })
-
-  test('Type predicates', () => {
-    expect(Response.is.Success(success)).toBe(true)
-    expect(Response.is.Failure(success)).toBe(false)
-  })
-
-  test('match', () => {
     expect(
       Response.match(success, {
         Success: () => undefined,
