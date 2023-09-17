@@ -1,4 +1,4 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, expectTypeOf, test } from 'vitest'
 import { createOperators, TAG_KEY, TaggedUnion, withTagKey } from './index'
 
 describe('createOperators', () => {
@@ -13,6 +13,23 @@ describe('createOperators', () => {
   test('Type predicates', () => {
     expect(Shape.is.Circle(circle)).toStrictEqual(true)
     expect(Shape.is.Rect(circle)).toStrictEqual(false)
+  })
+
+  test('Narrowing', () => {
+    if (Shape.is.Circle(circle)) {
+      expectTypeOf(circle).toEqualTypeOf<{
+        [TAG_KEY]: 'Circle'
+        radius: number
+      }>()
+    }
+
+    if (Shape.is.Rect(circle)) {
+      expectTypeOf(circle).toEqualTypeOf<{
+        [TAG_KEY]: 'Rect'
+        width: number
+        height: number
+      }>()
+    }
   })
 
   test('match', () => {
