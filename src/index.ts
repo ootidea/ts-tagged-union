@@ -164,22 +164,22 @@ function createMatch<TaggedUnion extends Record<TagKey, string | symbol>, TagKey
     Cases extends {
       [K in TaggedUnion[TagKey]]?: (payload: Extract<TaggedUnion, Record<TagKey, K>>) => unknown
     },
-    Default extends (payload: Extract<TaggedUnion, Record<TagKey, keyof Cases>>) => unknown,
+    DefaultCase extends (payload: Extract<TaggedUnion, Record<TagKey, keyof Cases>>) => unknown,
   >(
     taggedUnion: TaggedUnion,
     cases: Cases,
-    defaultCase: Default,
-  ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<Default>
+    defaultCase: DefaultCase,
+  ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase>
   function match<
     Cases extends {
       [K in TaggedUnion[TagKey]]?: (payload: PayloadOf<TaggedUnion, TagKey, K>) => unknown
     },
-    Default extends (payload: Extract<TaggedUnion, Record<TagKey, keyof Cases>>) => unknown,
+    DefaultCase extends (payload: Extract<TaggedUnion, Record<TagKey, keyof Cases>>) => unknown,
   >(
     taggedUnion: TaggedUnion,
     cases: Cases,
-    defaultCase?: Default,
-  ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<Default> {
+    defaultCase?: DefaultCase,
+  ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase> {
     const tagValue = taggedUnion[tagKey]
     if (tagValue in cases) {
       return (cases as any)[tagValue](taggedUnion)
