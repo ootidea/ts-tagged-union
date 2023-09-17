@@ -31,14 +31,14 @@ export type TaggedUnion<
   T extends Record<string | symbol, any>,
   TagKey extends keyof any = DefaultTagKey,
 > = {
-  [K in keyof T]: Simplify<Record<TagKey, K> & T[K]>
+  [K in keyof T]: MergeIntersection<Record<TagKey, K> & T[K]>
 }[keyof T]
 
 /**
  * @example
  * Simplify<{ a: string } & { b: number }> is equivalent to { a: string; b: number }
  */
-type Simplify<T> = T extends T ? { [K in keyof T]: T[K] } : never
+type MergeIntersection<T> = T extends T ? { [K in keyof T]: T[K] } : never
 
 export function helperFunctionsOf<
   TaggedUnion extends { [DEFAULT_TAG_KEY]: string | symbol },
@@ -97,7 +97,7 @@ function createHelperFunctionsWithTagKey<
 type HelperFunctions<
   TaggedUnion extends Record<TagKey, string | symbol>,
   TagKey extends keyof any = DefaultTagKey,
-> = Simplify<
+> = MergeIntersection<
   {
     match<
       Cases extends {
@@ -146,7 +146,7 @@ function createIs<TaggedUnion extends Record<TagKey, string | symbol>, TagKey ex
 type Is<
   TaggedUnion extends Record<TagKey, string | symbol>,
   TagKey extends keyof any = DefaultTagKey,
-> = Simplify<{
+> = MergeIntersection<{
   [K in TaggedUnion[TagKey]]: (
     taggedUnion: TaggedUnion,
   ) => taggedUnion is Extract<TaggedUnion, Record<TagKey, K>>
