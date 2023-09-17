@@ -37,3 +37,23 @@ const area = Shape.match(shape, {
   Rect: ({ width, height }) => width * height,
 })
 ```
+
+## Custom tag key
+
+The default tag key is the symbol, exported as `TAG_KEY`.  
+You can use custom tag key by writing as follows.  
+
+```typescript
+import { type TaggedUnion, withTagKey } from 'ts-tagged-union'
+
+// Specify a custom tag key as the second argument.
+type Response = TaggedUnion<
+  {
+    Success: { payload: Blob }   // Corresponds to { status: 'Success', payload: Blob }
+    Failure: { message: string } // Corresponds to { status: 'Failure', message: string }
+  },
+  'status'
+>
+// You need to call the withTagKey function for a custom tag key.
+const Response = withTagKey('status').createOperators<Response>()
+```
