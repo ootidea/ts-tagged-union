@@ -6,13 +6,23 @@ describe('createOperators', () => {
   const Shape = createOperators<Shape>()
   const circle = Shape.Circle({ radius: 3 }) as Shape
 
+  type NaturalNumber = TaggedUnion<{ Zero: {}; Succ: { pred: NaturalNumber } }>
+  const NaturalNumber = createOperators<NaturalNumber>()
+  const zero = NaturalNumber.Zero()
+  const one = NaturalNumber.Succ({ pred: zero })
+
   test('Data constructors', () => {
-    expect(Shape.Circle({ radius: 3 })).toStrictEqual({ [TAG_KEY]: 'Circle', radius: 3 })
+    expect(circle).toStrictEqual({ [TAG_KEY]: 'Circle', radius: 3 })
+
+    expect(zero).toStrictEqual({ [TAG_KEY]: 'Zero' })
   })
 
   test('Type predicates', () => {
     expect(Shape.is.Circle(circle)).toStrictEqual(true)
     expect(Shape.is.Rect(circle)).toStrictEqual(false)
+
+    expect(NaturalNumber.is.Zero(one)).toStrictEqual(false)
+    expect(NaturalNumber.is.Succ(one)).toStrictEqual(true)
   })
 
   test('Narrowing', () => {
@@ -30,6 +40,13 @@ describe('createOperators', () => {
         height: number
       }>()
     }
+
+    if (NaturalNumber.is.Succ(one)) {
+      expectTypeOf(one).toEqualTypeOf<{
+        [TAG_KEY]: 'Succ'
+        pred: NaturalNumber
+      }>()
+    }
   })
 
   test('match', () => {
@@ -39,6 +56,13 @@ describe('createOperators', () => {
         Circle: ({ radius }) => radius * radius * Math.PI,
       }),
     ).toBe(3 * 3 * Math.PI)
+
+    expect(
+      NaturalNumber.match(one, {
+        Zero: () => undefined,
+        Succ: ({ pred }) => pred,
+      }),
+    ).toStrictEqual(zero)
   })
 })
 

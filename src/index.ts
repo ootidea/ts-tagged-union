@@ -1,4 +1,4 @@
-export const TAG_KEY = Symbol()
+export const TAG_KEY = Symbol('TAG_KEY')
 export type TAG_KEY = typeof TAG_KEY
 
 export type TaggedUnion<T extends Record<string, any>, TagKey extends keyof any = TAG_KEY> = {
