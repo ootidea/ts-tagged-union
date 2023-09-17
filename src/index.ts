@@ -101,7 +101,7 @@ type Operators<
   {
     match<
       Cases extends {
-        [K in TaggedUnion[TagKey]]: (payload: PayloadOf<TaggedUnion, TagKey, K>) => unknown
+        [K in TaggedUnion[TagKey]]: (payload: Extract<TaggedUnion, Record<TagKey, K>>) => unknown
       },
     >(
       taggedUnion: TaggedUnion,
@@ -109,11 +109,9 @@ type Operators<
     ): ReturnType<Cases[keyof Cases]>
     match<
       Cases extends {
-        [K in TaggedUnion[TagKey]]?: (payload: PayloadOf<TaggedUnion, TagKey, K>) => unknown
+        [K in TaggedUnion[TagKey]]?: (payload: Extract<TaggedUnion, Record<TagKey, K>>) => unknown
       },
-      DefaultCase extends (
-        payload: Omit<Extract<TaggedUnion, Record<TagKey, keyof Cases>>, TagKey>,
-      ) => unknown,
+      DefaultCase extends (payload: Extract<TaggedUnion, Record<TagKey, keyof Cases>>) => unknown,
     >(
       taggedUnion: TaggedUnion,
       cases: Cases,
@@ -159,16 +157,14 @@ function createMatch<TaggedUnion extends Record<TagKey, string | symbol>, TagKey
 ) {
   function match<
     Cases extends {
-      [K in TaggedUnion[TagKey]]: (payload: PayloadOf<TaggedUnion, TagKey, K>) => unknown
+      [K in TaggedUnion[TagKey]]: (payload: Extract<TaggedUnion, Record<TagKey, K>>) => unknown
     },
   >(taggedUnion: TaggedUnion, cases: Cases): ReturnType<Cases[keyof Cases]>
   function match<
     Cases extends {
-      [K in TaggedUnion[TagKey]]?: (payload: PayloadOf<TaggedUnion, TagKey, K>) => unknown
+      [K in TaggedUnion[TagKey]]?: (payload: Extract<TaggedUnion, Record<TagKey, K>>) => unknown
     },
-    Default extends (
-      payload: Omit<Extract<TaggedUnion, Record<TagKey, keyof Cases>>, TagKey>,
-    ) => unknown,
+    Default extends (payload: Extract<TaggedUnion, Record<TagKey, keyof Cases>>) => unknown,
   >(
     taggedUnion: TaggedUnion,
     cases: Cases,
@@ -178,9 +174,7 @@ function createMatch<TaggedUnion extends Record<TagKey, string | symbol>, TagKey
     Cases extends {
       [K in TaggedUnion[TagKey]]?: (payload: PayloadOf<TaggedUnion, TagKey, K>) => unknown
     },
-    Default extends (
-      payload: Omit<Extract<TaggedUnion, Record<TagKey, keyof Cases>>, TagKey>,
-    ) => unknown,
+    Default extends (payload: Extract<TaggedUnion, Record<TagKey, keyof Cases>>) => unknown,
   >(
     taggedUnion: TaggedUnion,
     cases: Cases,
