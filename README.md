@@ -15,26 +15,26 @@ import { type TaggedUnion, createOperators } from 'ts-tagged-union'
 
 // Define a tagged union type
 export type Shape = TaggedUnion<{
-  Circle: { radius: number }
-  Rect: { width: number; height: number }
+  circle: { radius: number }
+  rect: { width: number; height: number }
 }>
 // Obtain helper functions
 export const Shape = createOperators<Shape>()
 
 // Data constructors
-const shape = Math.random() < 0.5 ? Shape.Circle({ radius: 4 }) : Shape.Rect({ width: 6, height: 8 })
+const shape = Math.random() < 0.5 ? Shape.circle({ radius: 4 }) : Shape.rect({ width: 6, height: 8 })
 
 // Type predicates
-if (Shape.is.Circle(shape)) {
-  console.log(`Circle: radius = ${shape.radius}`)
-} else if (Shape.is.Rect(shape)) {
-  console.log(`Rect: width = ${shape.width}, height = ${shape.height}`)
+if (Shape.is.circle(shape)) {
+  console.log(`circle: radius = ${shape.radius}`)
+} else if (Shape.is.rect(shape)) {
+  console.log(`rect: width = ${shape.width}, height = ${shape.height}`)
 }
 
 // Pattern matching function
 const area = Shape.match(shape, {
-  Circle: ({ radius }) => radius * radius * Math.PI,
-  Rect: ({ width, height }) => width * height,
+  circle: ({ radius }) => radius * radius * Math.PI,
+  rect: ({ width, height }) => width * height,
 })
 ```
 

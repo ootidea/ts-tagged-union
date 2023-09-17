@@ -6,26 +6,26 @@ export type TAG_KEY = typeof TAG_KEY
 /**
  * @example Default tag key
  * type Shape = TaggedUnion<{
- *   Circle: { radius: number }
- *   Rect: { width: number; height: number }
+ *   circle: { radius: number }
+ *   rect: { width: number; height: number }
  * }>
  * is equivalent to
  * type Shape =
- *   | { [TAG_KEY]: 'Circle'; radius: number }
- *   | { [TAG_KEY]: 'Rect'; width: number; height: number }
+ *   | { [TAG_KEY]: 'circle'; radius: number }
+ *   | { [TAG_KEY]: 'rect'; width: number; height: number }
  *
  * @example Custom tag key
  * type Shape = TaggedUnion<
  *   {
- *     Circle: { radius: number }
- *     Rect: { width: number; height: number }
+ *     circle: { radius: number }
+ *     rect: { width: number; height: number }
  *   },
  *   'type'
  * >
  * is equivalent to
  * type Shape =
- *   | { type: 'Circle'; radius: number }
- *   | { type: 'Rect'; width: number; height: number }
+ *   | { type: 'circle'; radius: number }
+ *   | { type: 'rect'; width: number; height: number }
  */
 export type TaggedUnion<
   T extends Record<string | symbol, any>,
@@ -50,8 +50,8 @@ export function createOperators<
  * @example
  * type Shape = TaggedUnion<
  *   {
- *     Circle: { radius: number }
- *     Rect: { width: number; height: number }
+ *     circle: { radius: number }
+ *     rect: { width: number; height: number }
  *   },
  *   'type'
  * >
@@ -157,10 +157,10 @@ const createMatch =
 /**
  * @example
  * type Shape = TaggedUnion<{
- *   Circle: { radius: number }
- *   Rect: { width: number; height: number }
+ *   circle: { radius: number }
+ *   rect: { width: number; height: number }
  * }>
- * type Payload = PayloadOf<Shape, TAG_KEY, 'Circle'>
+ * type Payload = PayloadOf<Shape, TAG_KEY, 'circle'>
  * is equivalent to
  * type Payload = { radius: number }
  */

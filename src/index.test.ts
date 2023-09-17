@@ -2,9 +2,9 @@ import { describe, expect, expectTypeOf, test } from 'vitest'
 import { createOperators, TAG_KEY, TaggedUnion, withTagKey } from './index'
 
 describe('createOperators', () => {
-  type Shape = TaggedUnion<{ Rect: { width: number; height: number }; Circle: { radius: number } }>
+  type Shape = TaggedUnion<{ rect: { width: number; height: number }; circle: { radius: number } }>
   const Shape = createOperators<Shape>()
-  const circle = Shape.Circle({ radius: 3 }) as Shape
+  const circle = Shape.circle({ radius: 3 }) as Shape
 
   // Recursive type
   type NaturalNumber = TaggedUnion<{ Zero: {}; Succ: { pred: NaturalNumber } }>
@@ -24,7 +24,7 @@ describe('createOperators', () => {
   const success = Response.Success({ payload: new Blob() }) as Response
 
   test('Data constructors', () => {
-    expect(circle).toStrictEqual({ [TAG_KEY]: 'Circle', radius: 3 })
+    expect(circle).toStrictEqual({ [TAG_KEY]: 'circle', radius: 3 })
 
     expect(zero).toStrictEqual({ [TAG_KEY]: 'Zero' })
 
@@ -35,8 +35,8 @@ describe('createOperators', () => {
   })
 
   test('Type predicates', () => {
-    expect(Shape.is.Circle(circle)).toBe(true)
-    expect(Shape.is.Rect(circle)).toBe(false)
+    expect(Shape.is.circle(circle)).toBe(true)
+    expect(Shape.is.rect(circle)).toBe(false)
 
     expect(NaturalNumber.is.Zero(one)).toBe(false)
     expect(NaturalNumber.is.Succ(one)).toBe(true)
@@ -46,16 +46,16 @@ describe('createOperators', () => {
   })
 
   test('Narrowing', () => {
-    if (Shape.is.Circle(circle)) {
+    if (Shape.is.circle(circle)) {
       expectTypeOf(circle).toEqualTypeOf<{
-        [TAG_KEY]: 'Circle'
+        [TAG_KEY]: 'circle'
         radius: number
       }>()
     }
 
-    if (Shape.is.Rect(circle)) {
+    if (Shape.is.rect(circle)) {
       expectTypeOf(circle).toEqualTypeOf<{
-        [TAG_KEY]: 'Rect'
+        [TAG_KEY]: 'rect'
         width: number
         height: number
       }>()
@@ -72,8 +72,8 @@ describe('createOperators', () => {
   test('match', () => {
     expect(
       Shape.match(circle, {
-        Rect: ({ width, height }) => width * height,
-        Circle: ({ radius }) => radius * radius * Math.PI,
+        rect: ({ width, height }) => width * height,
+        circle: ({ radius }) => radius * radius * Math.PI,
       }),
     ).toBe(3 * 3 * Math.PI)
 
