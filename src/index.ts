@@ -38,7 +38,7 @@ function createOperatorsWithTagKey<
       get(target, key) {
         if (Reflect.has(target, key)) return Reflect.get(target, key)
 
-        return (value: object) => ({ ...value, [tagKey]: key })
+        return (value?: object) => ({ ...(value ?? {}), [tagKey]: key })
       },
     },
   ) as any
@@ -59,9 +59,13 @@ type Operators<
     ) => ReturnType<Cases[keyof Cases]>
     is: Is<TaggedUnion, TagKey>
   } & {
-    [K in TaggedUnion[TagKey]]: (
-      payload: PayloadOf<TaggedUnion, TagKey, K>,
-    ) => Extract<TaggedUnion, Record<TagKey, K>>
+    // If the payload is empty ({}), the argument can be omitted.
+    [K in TaggedUnion[TagKey]]: PayloadOf<TaggedUnion, TagKey, K> extends Record<keyof any, never>
+      ? {
+          (): Extract<TaggedUnion, Record<TagKey, K>>
+          (payload: {}): Extract<TaggedUnion, Record<TagKey, K>>
+        }
+      : (payload: PayloadOf<TaggedUnion, TagKey, K>) => Extract<TaggedUnion, Record<TagKey, K>>
   }
 >
 
