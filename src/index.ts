@@ -36,7 +36,7 @@ export type TaggedUnion<
 
 /**
  * @example
- * Simplify<{ a: string } & { b: number }> is equivalent to { a: string; b: number }
+ * MergeIntersection<{ a: string } & { b: number }> is equivalent to { a: string; b: number }
  */
 type MergeIntersection<T> = T extends T ? { [K in keyof T]: T[K] } : never
 
