@@ -1,12 +1,12 @@
 # ts-tagged-union
 
-This is a TypeScript library designed for working with _tagged union types_, also known as _discriminated union types_.  
-It can **generate** the following helper functions for any tagged union type.
+This is a TypeScript library for _tagged unions_, also known as _discriminated unions_.  
+It offers the following helper functions for any tagged unions:  
 1. Data constructors
 2. Pattern matching function
 3. Type predicates
 
-This library can be described as an implementation of [algebraic data types](https://wikipedia.org/wiki/Algebraic_data_type).
+This library is essentially an implementation of [algebraic data types](https://wikipedia.org/wiki/Algebraic_data_type).  
 
 ## Basic example
 
@@ -18,7 +18,7 @@ export type Shape = TaggedUnion<{
   circle: { radius: number }
   rect: { width: number; height: number }
 }>
-// Obtain helper functions
+// Get helper functions for Shape type
 export const Shape = helperFunctionsOf<Shape>()
 
 // Data constructors

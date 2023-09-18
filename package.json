@@ -1,7 +1,7 @@
 {
   "name": "ts-tagged-union",
   "version": "0.2.0",
-  "description": "TypeScript library designed for working with tagged union types, also known as discriminated union types. It can generate the following helper functions for any tagged union type.",
+  "description": "This is a TypeScript library for tagged unions, also known as discriminated unions. It offers helper functions for tagged unions.",
   "keywords": [
     "Algebraic-Data-Types",
     "discriminated-union",
