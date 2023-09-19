@@ -44,7 +44,7 @@ The default tag key is the symbol, exported as `DEFAULT_TAG_KEY`.
 You can use custom tag key by writing as follows.  
 
 ```typescript
-import { type TaggedUnion, withTagKey } from 'ts-tagged-union'
+import { type TaggedUnion, helperFunctionsOf } from 'ts-tagged-union'
 
 // Specify a custom tag key as the second argument.
 type Response = TaggedUnion<
@@ -54,6 +54,6 @@ type Response = TaggedUnion<
   },
   'status'
 >
-// You need to call the withTagKey function for a custom tag key.
-const Response = withTagKey('status').helperFunctionsOf<Response>()
+// You need to provide a custom tag key as an argument due to TypeScript specifications.
+const Response = helperFunctionsOf<Response>('status')
 ```

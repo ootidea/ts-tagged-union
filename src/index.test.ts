@@ -1,5 +1,11 @@
 import { describe, expect, expectTypeOf, test } from 'vitest'
-import { DEFAULT_TAG_KEY, helperFunctionsOf, TaggedUnion, withTagKey } from './index'
+import {
+  AddHiddenTagKey,
+  DEFAULT_TAG_KEY,
+  DefaultTagKey,
+  helperFunctionsOf,
+  TaggedUnion,
+} from './index'
 
 describe('helperFunctionsOf', () => {
   type Shape = TaggedUnion<{ rect: { width: number; height: number }; circle: { radius: number } }>
@@ -20,7 +26,7 @@ describe('helperFunctionsOf', () => {
     },
     'status'
   >
-  const Response = withTagKey('status').helperFunctionsOf<Response>()
+  const Response = helperFunctionsOf<Response>('status')
   const success = Response.Success({ payload: new Blob() }) as Response
 
   test('Data constructors', () => {
@@ -47,25 +53,40 @@ describe('helperFunctionsOf', () => {
 
   test('Narrowing', () => {
     if (Shape.is.circle(circle)) {
-      expectTypeOf(circle).toEqualTypeOf<{
-        [DEFAULT_TAG_KEY]: 'circle'
-        radius: number
-      }>()
+      expectTypeOf(circle).toEqualTypeOf<
+        AddHiddenTagKey<
+          {
+            [DEFAULT_TAG_KEY]: 'circle'
+            radius: number
+          },
+          DefaultTagKey
+        >
+      >()
     }
 
     if (Shape.is.rect(circle)) {
-      expectTypeOf(circle).toEqualTypeOf<{
-        [DEFAULT_TAG_KEY]: 'rect'
-        width: number
-        height: number
-      }>()
+      expectTypeOf(circle).toEqualTypeOf<
+        AddHiddenTagKey<
+          {
+            [DEFAULT_TAG_KEY]: 'rect'
+            width: number
+            height: number
+          },
+          DefaultTagKey
+        >
+      >()
     }
 
     if (NaturalNumber.is.Succ(one)) {
-      expectTypeOf(one).toEqualTypeOf<{
-        [DEFAULT_TAG_KEY]: 'Succ'
-        pred: NaturalNumber
-      }>()
+      expectTypeOf(one).toEqualTypeOf<
+        AddHiddenTagKey<
+          {
+            [DEFAULT_TAG_KEY]: 'Succ'
+            pred: NaturalNumber
+          },
+          DefaultTagKey
+        >
+      >()
     }
   })
 

@@ -4,6 +4,13 @@ export const DEFAULT_TAG_KEY = Symbol('DEFAULT_TAG_KEY')
 export type DefaultTagKey = typeof DEFAULT_TAG_KEY
 
 /**
+ * TODO: write comment
+ */
+export declare const HIDDEN_TAG_KEY: unique symbol
+
+export type HiddenTagKey = typeof HIDDEN_TAG_KEY
+
+/**
  * @example Default tag key
  * type Shape = TaggedUnion<{
  *   circle: { radius: number }
@@ -32,22 +39,16 @@ export type TaggedUnion<
   TagKey extends keyof any = DefaultTagKey,
 > = {
   [K in keyof T]: MergeIntersection<Record<TagKey, K> & T[K]>
-}[keyof T]
+}[keyof T] & { [HIDDEN_TAG_KEY]?: TagKey }
 
 /**
- * @example
- * MergeIntersection<{ a: string } & { b: number }> is equivalent to { a: string; b: number }
+ * TODO: write comment
  */
-type MergeIntersection<T> = T extends T ? { [K in keyof T]: T[K] } : never
-
-export function helperFunctionsOf<
-  TaggedUnion extends { [DEFAULT_TAG_KEY]: string | symbol },
->(): HelperFunctions<TaggedUnion> {
-  return createHelperFunctionsWithTagKey<TaggedUnion, DefaultTagKey>(DEFAULT_TAG_KEY)
-}
+export type AddHiddenTagKey<TaggedUnion, TagKey> = TaggedUnion & { [HIDDEN_TAG_KEY]?: TagKey }
 
 /**
  * @example
+ * Given the type definition:
  * type Shape = TaggedUnion<
  *   {
  *     circle: { radius: number }
@@ -55,34 +56,42 @@ export function helperFunctionsOf<
  *   },
  *   'type'
  * >
- * const Shape = withTagKey('type').helperFunctionsOf<Shape>()
+ * The type TagKeyOf<Shape> will resolve to 'type'
  */
-export function withTagKey<TagKey extends keyof any>(
-  tagKey: TagKey,
-): {
-  helperFunctionsOf<TaggedUnion extends Record<TagKey, string | symbol>>(): HelperFunctions<
-    TaggedUnion,
-    TagKey
-  >
-} {
-  return {
-    helperFunctionsOf<TaggedUnion extends Record<TagKey, string | symbol>>(): HelperFunctions<
-      TaggedUnion,
-      TagKey
-    > {
-      return createHelperFunctionsWithTagKey<TaggedUnion, TagKey>(tagKey)
-    },
-  }
+export type TagKeyOf<TaggedUnion> = TaggedUnion extends {
+  [HIDDEN_TAG_KEY]?: infer TagKey extends keyof TaggedUnion
 }
+  ? TagKey
+  : never
 
-function createHelperFunctionsWithTagKey<
-  TaggedUnion extends Record<TagKey, string | symbol>,
-  TagKey extends keyof any = DefaultTagKey,
->(tagKey: TagKey): HelperFunctions<TaggedUnion, TagKey> {
+/**
+ * @example
+ * MergeIntersection<{ a: string } & { b: number }> is equivalent to { a: string; b: number }
+ */
+type MergeIntersection<T> = T extends T ? { [K in keyof T]: T[K] } : never
+
+/**
+ * TODO: write comment
+ */
+export function helperFunctionsOf<
+  TaggedUnion extends { [HIDDEN_TAG_KEY]?: DefaultTagKey } & Record<DefaultTagKey, string | symbol>,
+>(): HelperFunctions<TaggedUnion>
+export function helperFunctionsOf<
+  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+    TagKeyOf<TaggedUnion>,
+    string | symbol
+  >,
+>(tagKey: TagKeyOf<TaggedUnion>): HelperFunctions<TaggedUnion>
+export function helperFunctionsOf<
+  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+    TagKeyOf<TaggedUnion>,
+    string | symbol
+  >,
+>(tagKey: TagKeyOf<TaggedUnion> = DEFAULT_TAG_KEY as any): HelperFunctions<TaggedUnion> {
   return new Proxy(
     {
-      match: createMatch<TaggedUnion, TagKey>(tagKey),
-      is: createIs<TaggedUnion, TagKey>(tagKey),
+      match: createMatch<TaggedUnion>(tagKey),
+      is: createIs<TaggedUnion>(tagKey),
     },
     {
       get(target, key) {
@@ -95,13 +104,17 @@ function createHelperFunctionsWithTagKey<
 }
 
 type HelperFunctions<
-  TaggedUnion extends Record<TagKey, string | symbol>,
-  TagKey extends keyof any = DefaultTagKey,
+  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+    TagKeyOf<TaggedUnion>,
+    string | symbol
+  >,
 > = MergeIntersection<
   {
     match<
       Cases extends {
-        [K in TaggedUnion[TagKey]]: (payload: Extract<TaggedUnion, Record<TagKey, K>>) => unknown
+        [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], keyof any>]: (
+          payload: Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
+        ) => unknown
       },
     >(
       taggedUnion: TaggedUnion,
@@ -109,30 +122,42 @@ type HelperFunctions<
     ): ReturnType<Cases[keyof Cases]>
     match<
       Cases extends {
-        [K in TaggedUnion[TagKey]]?: (payload: Extract<TaggedUnion, Record<TagKey, K>>) => unknown
+        [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], keyof any>]?: (
+          payload: Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
+        ) => unknown
       },
-      DefaultCase extends (payload: Extract<TaggedUnion, Record<TagKey, keyof Cases>>) => unknown,
+      DefaultCase extends (
+        payload: Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, keyof Cases>>,
+      ) => unknown,
     >(
       taggedUnion: TaggedUnion,
       cases: Cases,
       defaultCase: DefaultCase,
     ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase>
 
-    is: Is<TaggedUnion, TagKey>
+    is: Is<TaggedUnion>
   } & {
     // If the payload is empty ({}), the argument can be omitted.
-    [K in TaggedUnion[TagKey]]: PayloadOf<TaggedUnion, TagKey, K> extends Record<keyof any, never>
+    [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], keyof any>]: PayloadOf<
+      TaggedUnion,
+      K
+    > extends Record<keyof any, never>
       ? {
-          (): Extract<TaggedUnion, Record<TagKey, K>>
-          (payload: {}): Extract<TaggedUnion, Record<TagKey, K>>
+          (): Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>
+          (payload: {}): Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>
         }
-      : (payload: PayloadOf<TaggedUnion, TagKey, K>) => Extract<TaggedUnion, Record<TagKey, K>>
+      : (
+          payload: PayloadOf<TaggedUnion, K>,
+        ) => Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>
   }
 >
 
-function createIs<TaggedUnion extends Record<TagKey, string | symbol>, TagKey extends keyof any>(
-  tagKey: TagKey,
-): Is<TaggedUnion, TagKey> {
+function createIs<
+  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+    TagKeyOf<TaggedUnion>,
+    string | symbol
+  >,
+>(tagKey: TagKeyOf<TaggedUnion>): Is<TaggedUnion> {
   return new Proxy(
     {},
     {
@@ -144,27 +169,32 @@ function createIs<TaggedUnion extends Record<TagKey, string | symbol>, TagKey ex
 }
 
 type Is<
-  TaggedUnion extends Record<TagKey, string | symbol>,
-  TagKey extends keyof any = DefaultTagKey,
+  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+    TagKeyOf<TaggedUnion>,
+    string | symbol
+  >,
 > = MergeIntersection<{
-  [K in TaggedUnion[TagKey]]: (
+  [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], keyof any>]: (
     taggedUnion: TaggedUnion,
-  ) => taggedUnion is Extract<TaggedUnion, Record<TagKey, K>>
+  ) => taggedUnion is Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>
 }>
 
-function createMatch<TaggedUnion extends Record<TagKey, string | symbol>, TagKey extends keyof any>(
-  tagKey: TagKey,
-) {
+function createMatch<
+  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+    TagKeyOf<TaggedUnion>,
+    string | symbol
+  >,
+>(tagKey: TagKeyOf<TaggedUnion>) {
   function match<
     Cases extends {
-      [K in TaggedUnion[TagKey]]: (payload: Extract<TaggedUnion, Record<TagKey, K>>) => unknown
+      [K in TagKeyOf<TaggedUnion>]: (taggedUnion: VariantOf<TaggedUnion, K>) => unknown
     },
   >(taggedUnion: TaggedUnion, cases: Cases): ReturnType<Cases[keyof Cases]>
   function match<
     Cases extends {
-      [K in TaggedUnion[TagKey]]?: (payload: Extract<TaggedUnion, Record<TagKey, K>>) => unknown
+      [K in TagKeyOf<TaggedUnion>]?: (taggedUnion: VariantOf<TaggedUnion, K>) => unknown
     },
-    DefaultCase extends (payload: Extract<TaggedUnion, Record<TagKey, keyof Cases>>) => unknown,
+    DefaultCase extends (taggedUnion: VariantOf<TaggedUnion, keyof Cases>) => unknown,
   >(
     taggedUnion: TaggedUnion,
     cases: Cases,
@@ -172,15 +202,15 @@ function createMatch<TaggedUnion extends Record<TagKey, string | symbol>, TagKey
   ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase>
   function match<
     Cases extends {
-      [K in TaggedUnion[TagKey]]?: (payload: PayloadOf<TaggedUnion, TagKey, K>) => unknown
+      [K in TagKeyOf<TaggedUnion>]?: (variant: VariantOf<TaggedUnion, K>) => unknown
     },
-    DefaultCase extends (payload: Extract<TaggedUnion, Record<TagKey, keyof Cases>>) => unknown,
+    DefaultCase extends (taggedUnion: VariantOf<TaggedUnion, keyof Cases>) => unknown,
   >(
     taggedUnion: TaggedUnion,
     cases: Cases,
     defaultCase?: DefaultCase,
   ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase> {
-    const tagValue = taggedUnion[tagKey]
+    const tagValue = taggedUnion[tagKey] as keyof any
     if (tagValue in cases) {
       return (cases as any)[tagValue](taggedUnion)
     }
@@ -190,18 +220,33 @@ function createMatch<TaggedUnion extends Record<TagKey, string | symbol>, TagKey
   return match
 }
 
+export type VariantOf<
+  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+    TagKeyOf<TaggedUnion>,
+    string | symbol
+  >,
+  K extends keyof any,
+> = Omit<Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>, HiddenTagKey>
+
 /**
  * @example
  * type Shape = TaggedUnion<{
  *   circle: { radius: number }
  *   rect: { width: number; height: number }
  * }>
- * type Payload = PayloadOf<Shape, DEFAULT_TAG_KEY, 'circle'>
+ * type Payload = PayloadOf<Shape, 'circle'>
  * is equivalent to
  * type Payload = { radius: number }
  */
-type PayloadOf<
-  TaggedUnion extends Record<TagKey, string | symbol>,
-  TagKey extends keyof any,
-  K extends TaggedUnion[TagKey],
-> = Omit<Extract<TaggedUnion, Record<TagKey, K>>, TagKey>
+export type PayloadOf<
+  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+    TagKeyOf<TaggedUnion>,
+    string | symbol
+  >,
+  K extends keyof any,
+> = Omit<
+  Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
+  TagKeyOf<TaggedUnion> | HiddenTagKey
+>
+
+type AssertExtends<T, U> = T extends infer V extends U ? V : never
