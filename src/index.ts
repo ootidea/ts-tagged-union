@@ -1,3 +1,5 @@
+import { AssertExtends, MergeIntersection } from './utility'
+
 /** Default tag key */
 export const DEFAULT_TAG_KEY = Symbol('DEFAULT_TAG_KEY')
 /** Type of default tag key */
@@ -63,12 +65,6 @@ export type TagKeyOf<TaggedUnion> = TaggedUnion extends {
 }
   ? TagKey
   : never
-
-/**
- * @example
- * MergeIntersection<{ a: string } & { b: number }> is equivalent to { a: string; b: number }
- */
-type MergeIntersection<T> = T extends T ? { [K in keyof T]: T[K] } : never
 
 /**
  * TODO: write comment
@@ -248,5 +244,3 @@ export type PayloadOf<
   Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
   TagKeyOf<TaggedUnion> | HiddenTagKey
 >
-
-type AssertExtends<T, U> = T extends infer V extends U ? V : never
