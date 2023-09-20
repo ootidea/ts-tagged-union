@@ -44,9 +44,36 @@ export type TaggedUnion<
 }[keyof T] & { [HIDDEN_TAG_KEY]?: TagKey }
 
 /**
- * TODO: write comment
+ * Add a hidden tag key to the given tagged union type.
+ * The hidden tag key is a special type used to specify which property is a tag.
+ * It exists only at the type level, so it does not affect runtime.
+ * @see RemoveHiddenTagKey
+ * @example
+ * Given the type definition:
+ * type RawTaggedUnion =
+ *   | { type: 'circle', radius: number }
+ *   | { type: 'rect', width: number; height: number }
+ * The type:
+ * type TaggedUnion = AddHiddenTagKey<RawTaggedUnion, 'type'>
+ * will resolve to:
+ * type TaggedUnion = (
+ *   | { type: 'circle'; radius: number }
+ *   | { type: 'rect'; width: number; height: number }
+ * ) & {
+ *   [HIDDEN_TAG_KEY]: 'type'
+ * }
  */
-export type AddHiddenTagKey<TaggedUnion, TagKey> = TaggedUnion & { [HIDDEN_TAG_KEY]?: TagKey }
+export type AddHiddenTagKey<TaggedUnion, TagKey = keyof TaggedUnion> = TaggedUnion & {
+  [HIDDEN_TAG_KEY]?: TagKey
+}
+
+/**
+ * Remove a hidden tag key from the given tagged union type.
+ * The hidden tag key is a special type used to specify which property is a tag.
+ * It exists only at the type level, so it does not affect runtime.
+ * @see AddHiddenTagKey
+ */
+export type RemoveHiddenTagKey<TaggedUnion> = Omit<TaggedUnion, HiddenTagKey>
 
 /**
  * @example
@@ -67,7 +94,23 @@ export type TagKeyOf<TaggedUnion> = TaggedUnion extends {
   : never
 
 /**
- * TODO: write comment
+ * Create helper functions for a tagged union.
+ * When using a non-default tag key, an argument is required.
+ * @example Default tag key
+ * type Shape = TaggedUnion<{
+ *   circle: { radius: number }
+ *   rect: { width: number; height: number }
+ * }>
+ * const Shape = helperFunctionsOf<Shape>()
+ * @example Custom tag key
+ * type Shape = TaggedUnion<
+ *   {
+ *     circle: { radius: number }
+ *     rect: { width: number; height: number }
+ *   },
+ *   'type'
+ * >
+ * const Shape = helperFunctionsOf<Shape>('type')
  */
 export function helperFunctionsOf<
   TaggedUnion extends { [HIDDEN_TAG_KEY]?: DefaultTagKey } & Record<DefaultTagKey, string | symbol>,
@@ -226,12 +269,14 @@ export type VariantOf<
 
 /**
  * @example
+ * Given the type definition:
  * type Shape = TaggedUnion<{
  *   circle: { radius: number }
  *   rect: { width: number; height: number }
  * }>
+ * The type:
  * type Payload = PayloadOf<Shape, 'circle'>
- * is equivalent to
+ * will resolve to:
  * type Payload = { radius: number }
  */
 export type PayloadOf<
