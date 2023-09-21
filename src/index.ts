@@ -239,28 +239,7 @@ function createMatch<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
->(tagKey: TagKeyOf<TaggedUnion>) {
-  function match<
-    Cases extends {
-      [K in AssertExtends<TagKeyOf<TaggedUnion>, string | symbol>]: (
-        taggedUnion: VariantOf<TaggedUnion, K>,
-      ) => unknown
-    },
-  >(taggedUnion: TaggedUnion, cases: Cases): ReturnType<Cases[keyof Cases]>
-  function match<
-    Cases extends {
-      [K in AssertExtends<TagKeyOf<TaggedUnion>, string | symbol>]?: (
-        taggedUnion: VariantOf<TaggedUnion, K>,
-      ) => unknown
-    },
-    DefaultCase extends (
-      taggedUnion: VariantOf<TaggedUnion, Exclude<keyof Cases, number>>,
-    ) => unknown,
-  >(
-    taggedUnion: TaggedUnion,
-    cases: Cases,
-    defaultCase: DefaultCase,
-  ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase>
+>(tagKey: TagKeyOf<TaggedUnion>): Match<TaggedUnion> {
   function match<
     Cases extends {
       [K in AssertExtends<TagKeyOf<TaggedUnion>, string | symbol>]?: (
@@ -283,6 +262,38 @@ function createMatch<
   }
 
   return match
+}
+
+type Match<
+  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+    TagKeyOf<TaggedUnion>,
+    string | symbol
+  >,
+> = {
+  <
+    Cases extends {
+      [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]: (
+        payload: Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
+      ) => unknown
+    },
+  >(
+    taggedUnion: TaggedUnion,
+    cases: Cases,
+  ): ReturnType<Cases[keyof Cases]>
+  <
+    Cases extends {
+      [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]?: (
+        payload: Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
+      ) => unknown
+    },
+    DefaultCase extends (
+      payload: Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, keyof Cases>>,
+    ) => unknown,
+  >(
+    taggedUnion: TaggedUnion,
+    cases: Cases,
+    defaultCase: DefaultCase,
+  ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase>
 }
 
 export type VariantOf<
