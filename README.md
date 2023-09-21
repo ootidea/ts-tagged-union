@@ -14,34 +14,62 @@ This library is essentially an implementation of [algebraic data types](https://
 import { type TaggedUnion, helperFunctionsOf } from 'ts-tagged-union'
 
 // Define a tagged union type
-export type Shape = TaggedUnion<{
-  circle: { radius: number }
-  rect: { width: number; height: number }
+export type Color = TaggedUnion<{
+  rgb: { r: number; g: number; b: number }
+  primary: {}
+  secondary: {}
 }>
-// Get helper functions for Shape type
-export const Shape = helperFunctionsOf<Shape>()
+// Get helper functions for the given type
+export const Color = helperFunctionsOf<Color>()
 
-// Data constructors
-const shape = Math.random() < 0.5 ? Shape.circle({ radius: 4 }) : Shape.rect({ width: 6, height: 8 })
+// Create with a data constructor
+const rgb = Color.rgb({ r: 255, g: 31, b: 0 })
+const primary = Color.primary() // {} can be omitted
 
-// Type predicates
-if (Shape.is.circle(shape)) {
-  console.log(`circle: radius = ${shape.radius}`)
-} else if (Shape.is.rect(shape)) {
-  console.log(`rect: width = ${shape.width}, height = ${shape.height}`)
-}
+console.log(rgb) // { r: 255, g: 31, b: 0, [Symbol(DEFAULT_TAG_KEY)]: 'rgb' }
+console.log(primary) // { [Symbol(DEFAULT_TAG_KEY)]: 'primary' }
+```
 
-// Pattern matching function
-const area = Shape.match(shape, {
-  circle: ({ radius }) => radius * radius * Math.PI,
-  rect: ({ width, height }) => width * height,
+## Pattern matching
+
+To perform pattern matching, use the `match` function.
+
+```typescript
+const color = Math.random() < 0.5 ? Color.rgb({ r: 255, g: 31, b: 0 }) : Color.primary()
+const cssColor = Color.match(color, {
+  rgb: ({ r, g, b }) => `rgb(${r}, ${g}, ${b})`,
+  primary: () => '#C0FFEE', 
+  secondary: () => 'blue',
 })
+```
+
+The third argument serves as a default case.
+
+```typescript
+const isAchromatic = Color.match(
+  color,
+  {
+    rgb: ({ r, g, b }) => r === g && g === b,
+  },
+  () => false,
+)
+```
+
+## Type predicates
+
+To determine if it is a specific variant, you can write as follows.
+
+```typescript
+if (Color.is.rgb(color)) {
+  // Here, narrowing is applied, so you can access each property
+  console.log(`rgb: ${color.r}, ${color.g}, ${color.b}`)
+}
 ```
 
 ## Custom tag key
 
 The default tag key is the symbol, exported as `DEFAULT_TAG_KEY`.  
-You can use custom tag key by writing as follows.  
+To define a tagged union type with the specified tag key, you can write as follows.  
 
 ```typescript
 import { type TaggedUnion, helperFunctionsOf } from 'ts-tagged-union'
@@ -52,8 +80,8 @@ type Response = TaggedUnion<
     Success: { payload: Blob }   // Corresponds to { status: 'Success', payload: Blob }
     Failure: { message: string } // Corresponds to { status: 'Failure', message: string }
   },
-  'status'
+  'status' // Either a string literal or symbol type
 >
-// You need to provide a custom tag key as an argument due to TypeScript specifications.
+// You need to provide the tag key as an argument due to TypeScript specifications.
 const Response = helperFunctionsOf<Response>('status')
 ```
