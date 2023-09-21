@@ -1,4 +1,4 @@
-import { expect, expectTypeOf, test } from 'vitest'
+import { describe, expect, expectTypeOf, test } from 'vitest'
 import { AddTagKeyPointer, DEFAULT_TAG_KEY, helperFunctionsOf, TaggedUnion } from './index'
 
 type Shape = TaggedUnion<{ rect: { width: number; height: number }; circle: { radius: number } }>
@@ -33,54 +33,98 @@ test('Data constructors', () => {
   })
 })
 
-test('Type predicates', () => {
-  expect(Shape.is.circle(circle)).toBe(true)
-  expect(Shape.is.rect(circle)).toBe(false)
+describe('Type predicates', () => {
+  test('is', () => {
+    expect(Shape.is.circle(circle)).toBe(true)
+    expect(Shape.is.rect(circle)).toBe(false)
 
-  expect(NaturalNumber.is.Zero(one)).toBe(false)
-  expect(NaturalNumber.is.Succ(one)).toBe(true)
+    expect(NaturalNumber.is.Zero(one)).toBe(false)
+    expect(NaturalNumber.is.Succ(one)).toBe(true)
 
-  expect(Response.is.Success(success)).toBe(true)
-  expect(Response.is.Failure(success)).toBe(false)
+    expect(Response.is.Success(success)).toBe(true)
+    expect(Response.is.Failure(success)).toBe(false)
+  })
+  test('isNot', () => {
+    expect(Shape.isNot.circle(circle)).toBe(false)
+    expect(Shape.isNot.rect(circle)).toBe(true)
+
+    expect(NaturalNumber.isNot.Zero(one)).toBe(true)
+    expect(NaturalNumber.isNot.Succ(one)).toBe(false)
+
+    expect(Response.isNot.Success(success)).toBe(false)
+    expect(Response.isNot.Failure(success)).toBe(true)
+  })
 })
 
-test('Narrowing', () => {
-  if (Shape.is.circle(circle)) {
-    expectTypeOf(circle).toEqualTypeOf<
-      AddTagKeyPointer<
-        {
-          [DEFAULT_TAG_KEY]: 'circle'
-          radius: number
-        },
-        typeof DEFAULT_TAG_KEY
-      >
-    >()
-  }
+describe('Narrowing', () => {
+  test('is', () => {
+    if (Shape.is.circle(circle)) {
+      expectTypeOf(circle).toEqualTypeOf<
+        AddTagKeyPointer<
+          {
+            [DEFAULT_TAG_KEY]: 'circle'
+            radius: number
+          },
+          typeof DEFAULT_TAG_KEY
+        >
+      >()
+    }
 
-  if (Shape.is.rect(circle)) {
-    expectTypeOf(circle).toEqualTypeOf<
-      AddTagKeyPointer<
-        {
-          [DEFAULT_TAG_KEY]: 'rect'
-          width: number
-          height: number
-        },
-        typeof DEFAULT_TAG_KEY
-      >
-    >()
-  }
+    if (Shape.is.rect(circle)) {
+      expectTypeOf(circle).toEqualTypeOf<
+        AddTagKeyPointer<
+          {
+            [DEFAULT_TAG_KEY]: 'rect'
+            width: number
+            height: number
+          },
+          typeof DEFAULT_TAG_KEY
+        >
+      >()
+    }
 
-  if (NaturalNumber.is.Succ(one)) {
-    expectTypeOf(one).toEqualTypeOf<
-      AddTagKeyPointer<
-        {
-          [DEFAULT_TAG_KEY]: 'Succ'
-          pred: NaturalNumber
-        },
-        typeof DEFAULT_TAG_KEY
-      >
-    >()
-  }
+    if (NaturalNumber.is.Succ(one)) {
+      expectTypeOf(one).toEqualTypeOf<
+        AddTagKeyPointer<
+          {
+            [DEFAULT_TAG_KEY]: 'Succ'
+            pred: NaturalNumber
+          },
+          typeof DEFAULT_TAG_KEY
+        >
+      >()
+    }
+  })
+  test('isNot', () => {
+    if (Shape.isNot.circle(circle)) {
+      expectTypeOf(circle).toEqualTypeOf<
+        AddTagKeyPointer<
+          {
+            [DEFAULT_TAG_KEY]: 'rect'
+            width: number
+            height: number
+          },
+          typeof DEFAULT_TAG_KEY
+        >
+      >()
+    }
+
+    if (Shape.isNot.rect(circle)) {
+      expectTypeOf(circle).toEqualTypeOf<
+        AddTagKeyPointer<
+          {
+            [DEFAULT_TAG_KEY]: 'circle'
+            radius: number
+          },
+          typeof DEFAULT_TAG_KEY
+        >
+      >()
+    }
+
+    if (NaturalNumber.isNot.Succ(one)) {
+      expectTypeOf(one).toEqualTypeOf<never>()
+    }
+  })
 })
 
 test('match', () => {

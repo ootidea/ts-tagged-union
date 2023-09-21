@@ -1,6 +1,6 @@
 # ts-tagged-union
 
-This is a TypeScript library for _tagged unions_, also known as _discriminated unions_.  
+`ts-tagged-union` is a TypeScript library for _tagged unions_, also known as _discriminated unions_.  
 It offers the following helper functions for any tagged unions:  
 1. Data constructors
 2. Pattern matching function
@@ -65,6 +65,8 @@ if (Color.is.rgb(color)) {
   console.log(`rgb: ${color.r}, ${color.g}, ${color.b}`)
 }
 ```
+
+You can also use the `isNot` property.
 
 ## Custom tag key
 

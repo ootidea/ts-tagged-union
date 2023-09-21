@@ -147,6 +147,7 @@ export function helperFunctionsOf<
     {
       match: createMatch<TaggedUnion>(tagKey),
       is: createIs<TaggedUnion>(tagKey),
+      isNot: createIsNot<TaggedUnion>(tagKey),
     },
     {
       get(target, key) {
@@ -165,32 +166,9 @@ type HelperFunctions<
   >,
 > = MergeIntersection<
   {
-    match<
-      Cases extends {
-        [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]: (
-          payload: Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
-        ) => unknown
-      },
-    >(
-      taggedUnion: TaggedUnion,
-      cases: Cases,
-    ): ReturnType<Cases[keyof Cases]>
-    match<
-      Cases extends {
-        [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]?: (
-          payload: Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
-        ) => unknown
-      },
-      DefaultCase extends (
-        payload: Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, keyof Cases>>,
-      ) => unknown,
-    >(
-      taggedUnion: TaggedUnion,
-      cases: Cases,
-      defaultCase: DefaultCase,
-    ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase>
-
+    match: Match<TaggedUnion>
     is: Is<TaggedUnion>
+    isNot: IsNot<TaggedUnion>
   } & {
     // If the payload is empty ({}), the argument can be omitted.
     [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]: PayloadOf<
@@ -232,6 +210,33 @@ type Is<
   [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]: (
     taggedUnion: TaggedUnion,
   ) => taggedUnion is Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>
+}>
+
+function createIsNot<
+  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+    TagKeyOf<TaggedUnion>,
+    string | symbol
+  >,
+>(tagKey: TagKeyOf<TaggedUnion>): Is<TaggedUnion> {
+  return new Proxy(
+    {},
+    {
+      get(target, key) {
+        return (taggedUnion: TaggedUnion) => taggedUnion[tagKey] !== key
+      },
+    },
+  ) as any
+}
+
+type IsNot<
+  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+    TagKeyOf<TaggedUnion>,
+    string | symbol
+  >,
+> = MergeIntersection<{
+  [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]: (
+    taggedUnion: TaggedUnion,
+  ) => taggedUnion is Exclude<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>
 }>
 
 function createMatch<
