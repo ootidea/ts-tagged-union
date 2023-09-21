@@ -59,7 +59,7 @@ export type TaggedUnion<
  *   [HIDDEN_TAG_KEY]: 'type'
  * }
  */
-export type AddHiddenTagKey<TaggedUnion, TagKey = keyof TaggedUnion> = TaggedUnion & {
+export type AddHiddenTagKey<TaggedUnion, TagKey extends keyof TaggedUnion> = TaggedUnion & {
   [HIDDEN_TAG_KEY]?: TagKey
 }
 
