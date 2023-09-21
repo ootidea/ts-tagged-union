@@ -2,8 +2,6 @@ import { AssertExtends, MergeIntersection } from './utility'
 
 /** Default tag key */
 export const DEFAULT_TAG_KEY = Symbol('DEFAULT_TAG_KEY')
-/** Type of default tag key */
-export type DefaultTagKey = typeof DEFAULT_TAG_KEY
 
 /**
  * TODO: write comment
@@ -38,7 +36,7 @@ export type HiddenTagKey = typeof HIDDEN_TAG_KEY
  */
 export type TaggedUnion<
   T extends Record<string | symbol, any>,
-  TagKey extends keyof any = DefaultTagKey,
+  TagKey extends keyof any = typeof DEFAULT_TAG_KEY,
 > = {
   [K in keyof T]: MergeIntersection<Record<TagKey, K> & T[K]>
 }[keyof T] & { [HIDDEN_TAG_KEY]?: TagKey }
@@ -76,6 +74,7 @@ export type AddHiddenTagKey<TaggedUnion, TagKey = keyof TaggedUnion> = TaggedUni
 export type RemoveHiddenTagKey<TaggedUnion> = Omit<TaggedUnion, HiddenTagKey>
 
 /**
+ * Get the tag key of the given tagged union type.
  * @example
  * Given the type definition:
  * type Shape = TaggedUnion<
@@ -113,7 +112,10 @@ export type TagKeyOf<TaggedUnion> = TaggedUnion extends {
  * const Shape = helperFunctionsOf<Shape>('type')
  */
 export function helperFunctionsOf<
-  TaggedUnion extends { [HIDDEN_TAG_KEY]?: DefaultTagKey } & Record<DefaultTagKey, string | symbol>,
+  TaggedUnion extends { [HIDDEN_TAG_KEY]?: typeof DEFAULT_TAG_KEY } & Record<
+    typeof DEFAULT_TAG_KEY,
+    string | symbol
+  >,
 >(): HelperFunctions<TaggedUnion>
 export function helperFunctionsOf<
   TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<

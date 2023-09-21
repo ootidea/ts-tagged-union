@@ -1,11 +1,5 @@
 import { describe, expect, expectTypeOf, test } from 'vitest'
-import {
-  AddHiddenTagKey,
-  DEFAULT_TAG_KEY,
-  DefaultTagKey,
-  helperFunctionsOf,
-  TaggedUnion,
-} from './index'
+import { AddHiddenTagKey, DEFAULT_TAG_KEY, helperFunctionsOf, TaggedUnion } from './index'
 
 describe('helperFunctionsOf', () => {
   type Shape = TaggedUnion<{ rect: { width: number; height: number }; circle: { radius: number } }>
@@ -59,7 +53,7 @@ describe('helperFunctionsOf', () => {
             [DEFAULT_TAG_KEY]: 'circle'
             radius: number
           },
-          DefaultTagKey
+          typeof DEFAULT_TAG_KEY
         >
       >()
     }
@@ -72,7 +66,7 @@ describe('helperFunctionsOf', () => {
             width: number
             height: number
           },
-          DefaultTagKey
+          typeof DEFAULT_TAG_KEY
         >
       >()
     }
@@ -84,7 +78,7 @@ describe('helperFunctionsOf', () => {
             [DEFAULT_TAG_KEY]: 'Succ'
             pred: NaturalNumber
           },
-          DefaultTagKey
+          typeof DEFAULT_TAG_KEY
         >
       >()
     }
