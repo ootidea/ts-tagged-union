@@ -1,5 +1,6 @@
 import { describe, expect, expectTypeOf, test } from 'vitest'
-import { AddTagKeyPointer, DEFAULT_TAG_KEY, helperFunctionsOf, TaggedUnion } from './index'
+import { helperFunctionsOf } from './helperFunctionsOf'
+import { AddTagKeyPointer, DEFAULT_TAG_KEY, TaggedUnion } from './index'
 
 type Shape = TaggedUnion<{ rect: { width: number; height: number }; circle: { radius: number } }>
 const Shape = helperFunctionsOf<Shape>()
