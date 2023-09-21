@@ -1,25 +1,40 @@
 import { AssertExtends, MergeIntersection } from './utility'
 
-/** Default tag key */
+/** Default tag key of the tagged union created with this library */
 export const DEFAULT_TAG_KEY = Symbol('DEFAULT_TAG_KEY')
 
 /**
- * TODO: write comment
+ * The key of tag-key-pointer property that specify which property is a tag.
+ * It exists only at the type level, so it does not affect runtime.
+ * @example
+ * In the following example, the tag key ('type') is specified by the tag-key-pointer property.
+ * type Shape = (
+ *   | { type: 'circle'; radius: number }
+ *   | { type: 'rect'; width: number; height: number }
+ * ) & {
+ *   [TAG_KEY_POINTER]?: 'type'
+ * }
  */
-export declare const HIDDEN_TAG_KEY: unique symbol
+export declare const TAG_KEY_POINTER: unique symbol
 
 /**
+ * Define a tagged union type.
  * @example Default tag key
+ * The type definition:
  * type Shape = TaggedUnion<{
  *   circle: { radius: number }
  *   rect: { width: number; height: number }
  * }>
- * is equivalent to
- * type Shape =
+ * is equivalent to:
+ * type Shape = (
  *   | { [DEFAULT_TAG_KEY]: 'circle'; radius: number }
  *   | { [DEFAULT_TAG_KEY]: 'rect'; width: number; height: number }
+ * ) & {
+ *   [TAG_KEY_POINTER]?: typeof DEFAULT_TAG_KEY
+ * }
  *
  * @example Custom tag key
+ * The type definition:
  * type Shape = TaggedUnion<
  *   {
  *     circle: { radius: number }
@@ -27,49 +42,50 @@ export declare const HIDDEN_TAG_KEY: unique symbol
  *   },
  *   'type'
  * >
- * is equivalent to
- * type Shape =
+ * is equivalent to:
+ * type Shape = (
  *   | { type: 'circle'; radius: number }
  *   | { type: 'rect'; width: number; height: number }
+ * ) & {
+ *   [TAG_KEY_POINTER]?: 'type'
+ * }
  */
 export type TaggedUnion<
-  T extends Record<string | symbol, any>,
+  Payloads extends Record<string | symbol, any>,
   TagKey extends keyof any = typeof DEFAULT_TAG_KEY,
 > = {
-  [K in keyof T]: MergeIntersection<Record<TagKey, K> & T[K]>
-}[keyof T] & { [HIDDEN_TAG_KEY]?: TagKey }
+  [K in keyof Payloads]: MergeIntersection<Record<TagKey, K> & Payloads[K]>
+}[keyof Payloads] & { [TAG_KEY_POINTER]?: TagKey }
 
 /**
- * Add a hidden tag key to the given tagged union type.
- * The hidden tag key is a special type used to specify which property is a tag.
- * It exists only at the type level, so it does not affect runtime.
- * @see RemoveHiddenTagKey
+ * Add the tag-key-pointer property to the given tagged union type.
+ * @see TAG_KEY_POINTER
+ * @see RemoveTagKeyPointer
  * @example
  * Given the type definition:
  * type RawTaggedUnion =
  *   | { type: 'circle', radius: number }
  *   | { type: 'rect', width: number; height: number }
  * The type:
- * type TaggedUnion = AddHiddenTagKey<RawTaggedUnion, 'type'>
+ * type TaggedUnion = AddTagKeyPointer<RawTaggedUnion, 'type'>
  * will resolve to:
  * type TaggedUnion = (
  *   | { type: 'circle'; radius: number }
  *   | { type: 'rect'; width: number; height: number }
  * ) & {
- *   [HIDDEN_TAG_KEY]: 'type'
+ *   [TAG_KEY_POINTER]?: 'type'
  * }
  */
-export type AddHiddenTagKey<TaggedUnion, TagKey extends keyof TaggedUnion> = TaggedUnion & {
-  [HIDDEN_TAG_KEY]?: TagKey
+export type AddTagKeyPointer<TaggedUnion, TagKey extends keyof TaggedUnion> = TaggedUnion & {
+  [TAG_KEY_POINTER]?: TagKey
 }
 
 /**
- * Remove a hidden tag key from the given tagged union type.
- * The hidden tag key is a special type used to specify which property is a tag.
- * It exists only at the type level, so it does not affect runtime.
- * @see AddHiddenTagKey
+ * Remove the tag-key-pointer property from the given tagged union type.
+ * @see TAG_KEY_POINTER
+ * @see AddTagKeyPointer
  */
-export type RemoveHiddenTagKey<TaggedUnion> = Omit<TaggedUnion, typeof HIDDEN_TAG_KEY>
+export type RemoveTagKeyPointer<TaggedUnion> = Omit<TaggedUnion, typeof TAG_KEY_POINTER>
 
 /**
  * Get the tag key of the given tagged union type.
@@ -85,14 +101,14 @@ export type RemoveHiddenTagKey<TaggedUnion> = Omit<TaggedUnion, typeof HIDDEN_TA
  * The type TagKeyOf<Shape> will resolve to 'type'
  */
 export type TagKeyOf<TaggedUnion> = TaggedUnion extends {
-  [HIDDEN_TAG_KEY]?: infer TagKey extends keyof TaggedUnion
+  [TAG_KEY_POINTER]?: infer TagKey extends keyof TaggedUnion
 }
   ? TagKey
   : never
 
 /**
- * Create helper functions for a tagged union.
- * When using a non-default tag key, an argument is required.
+ * Create helper functions for the given tagged union type.
+ * If the type has a custom tag key, you need to provide the tag key as an argument.
  * @example Default tag key
  * type Shape = TaggedUnion<{
  *   circle: { radius: number }
@@ -110,19 +126,19 @@ export type TagKeyOf<TaggedUnion> = TaggedUnion extends {
  * const Shape = helperFunctionsOf<Shape>('type')
  */
 export function helperFunctionsOf<
-  TaggedUnion extends { [HIDDEN_TAG_KEY]?: typeof DEFAULT_TAG_KEY } & Record<
+  TaggedUnion extends { [TAG_KEY_POINTER]?: typeof DEFAULT_TAG_KEY } & Record<
     typeof DEFAULT_TAG_KEY,
     string | symbol
   >,
 >(): HelperFunctions<TaggedUnion>
 export function helperFunctionsOf<
-  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
 >(tagKey: TagKeyOf<TaggedUnion>): HelperFunctions<TaggedUnion>
 export function helperFunctionsOf<
-  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
@@ -143,7 +159,7 @@ export function helperFunctionsOf<
 }
 
 type HelperFunctions<
-  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
@@ -192,7 +208,7 @@ type HelperFunctions<
 >
 
 function createIs<
-  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
@@ -208,7 +224,7 @@ function createIs<
 }
 
 type Is<
-  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
@@ -219,7 +235,7 @@ type Is<
 }>
 
 function createMatch<
-  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
@@ -260,12 +276,12 @@ function createMatch<
 }
 
 export type VariantOf<
-  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
   K extends keyof any,
-> = Omit<Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>, typeof HIDDEN_TAG_KEY>
+> = Omit<Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>, typeof TAG_KEY_POINTER>
 
 /**
  * @example
@@ -280,12 +296,12 @@ export type VariantOf<
  * type Payload = { radius: number }
  */
 export type PayloadOf<
-  TaggedUnion extends { [HIDDEN_TAG_KEY]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
   K extends keyof any,
 > = Omit<
   Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
-  TagKeyOf<TaggedUnion> | typeof HIDDEN_TAG_KEY
+  TagKeyOf<TaggedUnion> | typeof TAG_KEY_POINTER
 >

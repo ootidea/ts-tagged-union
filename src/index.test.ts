@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, test } from 'vitest'
-import { AddHiddenTagKey, DEFAULT_TAG_KEY, helperFunctionsOf, TaggedUnion } from './index'
+import { AddTagKeyPointer, DEFAULT_TAG_KEY, helperFunctionsOf, TaggedUnion } from './index'
 
 describe('helperFunctionsOf', () => {
   type Shape = TaggedUnion<{ rect: { width: number; height: number }; circle: { radius: number } }>
@@ -48,7 +48,7 @@ describe('helperFunctionsOf', () => {
   test('Narrowing', () => {
     if (Shape.is.circle(circle)) {
       expectTypeOf(circle).toEqualTypeOf<
-        AddHiddenTagKey<
+        AddTagKeyPointer<
           {
             [DEFAULT_TAG_KEY]: 'circle'
             radius: number
@@ -60,7 +60,7 @@ describe('helperFunctionsOf', () => {
 
     if (Shape.is.rect(circle)) {
       expectTypeOf(circle).toEqualTypeOf<
-        AddHiddenTagKey<
+        AddTagKeyPointer<
           {
             [DEFAULT_TAG_KEY]: 'rect'
             width: number
@@ -73,7 +73,7 @@ describe('helperFunctionsOf', () => {
 
     if (NaturalNumber.is.Succ(one)) {
       expectTypeOf(one).toEqualTypeOf<
-        AddHiddenTagKey<
+        AddTagKeyPointer<
           {
             [DEFAULT_TAG_KEY]: 'Succ'
             pred: NaturalNumber
