@@ -52,7 +52,7 @@ export declare const TAG_KEY_POINTER: unique symbol
  */
 export type TaggedUnion<
   Payloads extends Record<string | symbol, any>,
-  TagKey extends keyof any = typeof DEFAULT_TAG_KEY,
+  TagKey extends string | symbol = typeof DEFAULT_TAG_KEY,
 > = {
   [K in keyof Payloads]: MergeIntersection<Record<TagKey, K> & Payloads[K]>
 }[keyof Payloads] & { [TAG_KEY_POINTER]?: TagKey }
@@ -167,7 +167,7 @@ type HelperFunctions<
   {
     match<
       Cases extends {
-        [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], keyof any>]: (
+        [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]: (
           payload: Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
         ) => unknown
       },
@@ -177,7 +177,7 @@ type HelperFunctions<
     ): ReturnType<Cases[keyof Cases]>
     match<
       Cases extends {
-        [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], keyof any>]?: (
+        [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]?: (
           payload: Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
         ) => unknown
       },
@@ -193,7 +193,7 @@ type HelperFunctions<
     is: Is<TaggedUnion>
   } & {
     // If the payload is empty ({}), the argument can be omitted.
-    [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], keyof any>]: PayloadOf<
+    [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]: PayloadOf<
       TaggedUnion,
       K
     > extends Record<keyof any, never>
@@ -229,7 +229,7 @@ type Is<
     string | symbol
   >,
 > = MergeIntersection<{
-  [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], keyof any>]: (
+  [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]: (
     taggedUnion: TaggedUnion,
   ) => taggedUnion is Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>
 }>
@@ -242,14 +242,20 @@ function createMatch<
 >(tagKey: TagKeyOf<TaggedUnion>) {
   function match<
     Cases extends {
-      [K in TagKeyOf<TaggedUnion>]: (taggedUnion: VariantOf<TaggedUnion, K>) => unknown
+      [K in AssertExtends<TagKeyOf<TaggedUnion>, string | symbol>]: (
+        taggedUnion: VariantOf<TaggedUnion, K>,
+      ) => unknown
     },
   >(taggedUnion: TaggedUnion, cases: Cases): ReturnType<Cases[keyof Cases]>
   function match<
     Cases extends {
-      [K in TagKeyOf<TaggedUnion>]?: (taggedUnion: VariantOf<TaggedUnion, K>) => unknown
+      [K in AssertExtends<TagKeyOf<TaggedUnion>, string | symbol>]?: (
+        taggedUnion: VariantOf<TaggedUnion, K>,
+      ) => unknown
     },
-    DefaultCase extends (taggedUnion: VariantOf<TaggedUnion, keyof Cases>) => unknown,
+    DefaultCase extends (
+      taggedUnion: VariantOf<TaggedUnion, Exclude<keyof Cases, number>>,
+    ) => unknown,
   >(
     taggedUnion: TaggedUnion,
     cases: Cases,
@@ -257,15 +263,19 @@ function createMatch<
   ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase>
   function match<
     Cases extends {
-      [K in TagKeyOf<TaggedUnion>]?: (variant: VariantOf<TaggedUnion, K>) => unknown
+      [K in AssertExtends<TagKeyOf<TaggedUnion>, string | symbol>]?: (
+        variant: VariantOf<TaggedUnion, K>,
+      ) => unknown
     },
-    DefaultCase extends (taggedUnion: VariantOf<TaggedUnion, keyof Cases>) => unknown,
+    DefaultCase extends (
+      taggedUnion: VariantOf<TaggedUnion, Exclude<keyof Cases, number>>,
+    ) => unknown,
   >(
     taggedUnion: TaggedUnion,
     cases: Cases,
     defaultCase?: DefaultCase,
   ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase> {
-    const tagValue = taggedUnion[tagKey] as keyof any
+    const tagValue = taggedUnion[tagKey] as string | symbol
     if (tagValue in cases) {
       return (cases as any)[tagValue](taggedUnion)
     }
@@ -280,7 +290,7 @@ export type VariantOf<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
-  K extends keyof any,
+  K extends string | symbol,
 > = Omit<Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>, typeof TAG_KEY_POINTER>
 
 /**
@@ -300,7 +310,7 @@ export type PayloadOf<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
-  K extends keyof any,
+  K extends string | symbol,
 > = Omit<
   Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
   TagKeyOf<TaggedUnion> | typeof TAG_KEY_POINTER
