@@ -8,8 +8,6 @@ export const DEFAULT_TAG_KEY = Symbol('DEFAULT_TAG_KEY')
  */
 export declare const HIDDEN_TAG_KEY: unique symbol
 
-export type HiddenTagKey = typeof HIDDEN_TAG_KEY
-
 /**
  * @example Default tag key
  * type Shape = TaggedUnion<{
@@ -71,7 +69,7 @@ export type AddHiddenTagKey<TaggedUnion, TagKey = keyof TaggedUnion> = TaggedUni
  * It exists only at the type level, so it does not affect runtime.
  * @see AddHiddenTagKey
  */
-export type RemoveHiddenTagKey<TaggedUnion> = Omit<TaggedUnion, HiddenTagKey>
+export type RemoveHiddenTagKey<TaggedUnion> = Omit<TaggedUnion, typeof HIDDEN_TAG_KEY>
 
 /**
  * Get the tag key of the given tagged union type.
@@ -267,7 +265,7 @@ export type VariantOf<
     string | symbol
   >,
   K extends keyof any,
-> = Omit<Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>, HiddenTagKey>
+> = Omit<Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>, typeof HIDDEN_TAG_KEY>
 
 /**
  * @example
@@ -289,5 +287,5 @@ export type PayloadOf<
   K extends keyof any,
 > = Omit<
   Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
-  TagKeyOf<TaggedUnion> | HiddenTagKey
+  TagKeyOf<TaggedUnion> | typeof HIDDEN_TAG_KEY
 >
