@@ -128,47 +128,49 @@ describe('Narrowing', () => {
   })
 })
 
-test('match', () => {
-  expect(
-    Shape.match(circle, {
-      rect: ({ width, height }) => width * height,
-      circle: ({ radius }) => radius * radius * Math.PI,
-    }),
-  ).toBe(3 * 3 * Math.PI)
-
-  expect(
-    NaturalNumber.match(one, {
-      Zero: () => undefined,
-      Succ: ({ pred }) => pred,
-    }),
-  ).toStrictEqual(zero)
-
-  expect(
-    Response.match(success, {
-      Success: () => undefined,
-      Failure: ({ message }) => message,
-    }),
-  ).toBe(undefined)
-})
-
-test('match with default case', () => {
-  expect(
-    Shape.match(
-      circle,
-      {
+describe('Pattern matching', () => {
+  test('match', () => {
+    expect(
+      Shape.match(circle, {
         rect: ({ width, height }) => width * height,
-      },
-      () => NaN,
-    ),
-  ).toBeNaN()
+        circle: ({ radius }) => radius * radius * Math.PI,
+      }),
+    ).toBe(3 * 3 * Math.PI)
 
-  expect(
-    Response.match(
-      success,
-      {
-        Success: ({ payload }) => payload.size,
-      },
-      () => 'unknown',
-    ),
-  ).toBe(0)
+    expect(
+      NaturalNumber.match(one, {
+        Zero: () => undefined,
+        Succ: ({ pred }) => pred,
+      }),
+    ).toStrictEqual(zero)
+
+    expect(
+      Response.match(success, {
+        Success: () => undefined,
+        Failure: ({ message }) => message,
+      }),
+    ).toBe(undefined)
+  })
+
+  test('match with default case', () => {
+    expect(
+      Shape.match(
+        circle,
+        {
+          rect: ({ width, height }) => width * height,
+        },
+        () => NaN,
+      ),
+    ).toBeNaN()
+
+    expect(
+      Response.match(
+        success,
+        {
+          Success: ({ payload }) => payload.size,
+        },
+        () => 'unknown',
+      ),
+    ).toBe(0)
+  })
 })
