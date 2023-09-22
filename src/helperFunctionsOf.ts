@@ -41,6 +41,7 @@ export function helperFunctionsOf<
   return new Proxy(
     {
       match: createMatch<TaggedUnion>(tagKey),
+      matchPartial: createMatchPartial<TaggedUnion>(tagKey),
       is: createIs<TaggedUnion>(tagKey),
       isNot: createIsNot<TaggedUnion>(tagKey),
     },
@@ -62,6 +63,7 @@ type HelperFunctions<
 > = MergeIntersection<
   {
     match: Match<TaggedUnion>
+    matchPartial: MatchPartial<TaggedUnion>
     is: Is<TaggedUnion>
     isNot: IsNot<TaggedUnion>
   } & {
@@ -194,4 +196,48 @@ type Match<
     cases: Cases,
     defaultCase: DefaultCase,
   ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase>
+}
+
+function createMatchPartial<
+  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+    TagKeyOf<TaggedUnion>,
+    string | symbol
+  >,
+>(tagKey: TagKeyOf<TaggedUnion>): MatchPartial<TaggedUnion> {
+  function matchPartial<
+    Cases extends {
+      [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]?: (
+        variant: VariantOf<TaggedUnion, K>,
+      ) => unknown
+    },
+  >(
+    taggedUnion: TaggedUnion,
+    cases: Cases,
+  ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | undefined {
+    const tagValue = taggedUnion[tagKey] as string | symbol
+    if (tagValue in cases) {
+      return (cases as any)[tagValue](taggedUnion)
+    }
+    return undefined
+  }
+
+  return matchPartial
+}
+
+type MatchPartial<
+  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+    TagKeyOf<TaggedUnion>,
+    string | symbol
+  >,
+> = {
+  <
+    Cases extends {
+      [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]?: (
+        variant: VariantOf<TaggedUnion, K>,
+      ) => unknown
+    },
+  >(
+    taggedUnion: TaggedUnion,
+    cases: Cases,
+  ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | undefined
 }

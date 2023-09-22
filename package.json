@@ -8,10 +8,10 @@
     "Algebraic-Data-Types",
     "coproduct",
     "pattern-matching",
+    "exhaustive",
     "type-predicate",
     "narrowing",
     "type-guard",
-    "haskell",
     "functional-programming",
     "functional"
   ],

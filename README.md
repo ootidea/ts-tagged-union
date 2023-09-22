@@ -55,6 +55,8 @@ const isAchromatic = Color.match(
 )
 ```
 
+To perform non-exhaustive pattern matching, use `matchPartial` instead.  
+
 ## Type predicates
 
 To determine if it is a specific variant, you can write as follows.  

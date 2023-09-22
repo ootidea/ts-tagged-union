@@ -173,4 +173,26 @@ describe('Pattern matching', () => {
       ),
     ).toBe(0)
   })
+
+  test('matchPartial', () => {
+    expect(
+      Shape.matchPartial(circle, {
+        rect: ({ width, height }) => width * height,
+        circle: ({ radius }) => radius * radius * Math.PI,
+      }),
+    ).toBe(3 * 3 * Math.PI)
+
+    expect(
+      NaturalNumber.matchPartial(one, {
+        Zero: () => undefined,
+        Succ: ({ pred }) => pred,
+      }),
+    ).toStrictEqual(zero)
+
+    expect(
+      Response.matchPartial(success, {
+        Failure: ({ message }) => message,
+      }),
+    ).toBe(undefined)
+  })
 })
