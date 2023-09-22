@@ -141,8 +141,8 @@ function createMatch<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
->(tagKey: TagKeyOf<TaggedUnion>): Match<TaggedUnion> {
-  function match<
+>(tagKey: TagKeyOf<TaggedUnion>) {
+  return function <
     Cases extends {
       [K in AssertExtends<TagKeyOf<TaggedUnion>, string | symbol>]?: (
         variant: VariantOf<TaggedUnion, K>,
@@ -162,8 +162,6 @@ function createMatch<
     }
     return (defaultCase as any)(taggedUnion)
   }
-
-  return match
 }
 
 type Match<
@@ -175,7 +173,7 @@ type Match<
   <
     Cases extends {
       [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]: (
-        payload: Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
+        variant: VariantOf<TaggedUnion, K>,
       ) => unknown
     },
   >(
@@ -185,11 +183,11 @@ type Match<
   <
     Cases extends {
       [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]?: (
-        payload: Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
+        variant: VariantOf<TaggedUnion, K>,
       ) => unknown
     },
     DefaultCase extends (
-      payload: Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, keyof Cases>>,
+      taggedUnion: VariantOf<TaggedUnion, Exclude<keyof Cases, number>>,
     ) => unknown,
   >(
     taggedUnion: TaggedUnion,
