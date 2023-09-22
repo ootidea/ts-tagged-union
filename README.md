@@ -26,8 +26,8 @@ export const Color = createHelperFunctions<Color>()
 const rgb = Color.rgb({ r: 255, g: 31, b: 0 })
 const primary = Color.primary() // {} can be omitted
 
-console.log(rgb) // { r: 255, g: 31, b: 0, [Symbol(DEFAULT_TAG_KEY)]: 'rgb' }
-console.log(primary) // { [Symbol(DEFAULT_TAG_KEY)]: 'primary' }
+console.log(rgb) // { r: 255, g: 31, b: 0, [Symbol(defaultTagKey)]: 'rgb' }
+console.log(primary) // { [Symbol(defaultTagKey)]: 'primary' }
 ```
 
 ## Pattern matching
@@ -72,7 +72,7 @@ You can also use the `isNot` property.
 
 ## Custom tag key
 
-The default tag key is the predefined symbol, exported as `DEFAULT_TAG_KEY`.  
+The default tag key is the predefined symbol, exported as `defaultTagKey`.  
 To define a tagged union type with the specified tag key, you can write as follows.  
 
 ```typescript

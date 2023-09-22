@@ -1,4 +1,4 @@
-import { DEFAULT_TAG_KEY, PayloadOf, TAG_KEY_POINTER, TagKeyOf, VariantOf } from './index'
+import { defaultTagKey, PayloadOf, TagKeyOf, tagKeyPointer, VariantOf } from './index'
 import { AssertExtends, MergeIntersection } from './utility'
 
 /**
@@ -21,23 +21,23 @@ import { AssertExtends, MergeIntersection } from './utility'
  * const Shape = createHelperFunctions<Shape>('type')
  */
 export function createHelperFunctions<
-  TaggedUnion extends { [TAG_KEY_POINTER]?: typeof DEFAULT_TAG_KEY } & Record<
-    typeof DEFAULT_TAG_KEY,
+  TaggedUnion extends { [tagKeyPointer]?: typeof defaultTagKey } & Record<
+    typeof defaultTagKey,
     string | symbol
   >,
 >(): HelperFunctions<TaggedUnion>
 export function createHelperFunctions<
-  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
 >(tagKey: TagKeyOf<TaggedUnion>): HelperFunctions<TaggedUnion>
 export function createHelperFunctions<
-  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
->(tagKey: TagKeyOf<TaggedUnion> = DEFAULT_TAG_KEY as any): HelperFunctions<TaggedUnion> {
+>(tagKey: TagKeyOf<TaggedUnion> = defaultTagKey as any): HelperFunctions<TaggedUnion> {
   return new Proxy(
     {
       match: createMatch<TaggedUnion>(tagKey),
@@ -56,7 +56,7 @@ export function createHelperFunctions<
 }
 
 type HelperFunctions<
-  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
@@ -83,7 +83,7 @@ type HelperFunctions<
 >
 
 function createIs<
-  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
@@ -99,7 +99,7 @@ function createIs<
 }
 
 type Is<
-  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
@@ -110,7 +110,7 @@ type Is<
 }>
 
 function createIsNot<
-  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
@@ -126,7 +126,7 @@ function createIsNot<
 }
 
 type IsNot<
-  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
@@ -137,7 +137,7 @@ type IsNot<
 }>
 
 function createMatch<
-  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
@@ -165,7 +165,7 @@ function createMatch<
 }
 
 type Match<
-  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
@@ -197,7 +197,7 @@ type Match<
 }
 
 function createMatchPartial<
-  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
@@ -223,7 +223,7 @@ function createMatchPartial<
 }
 
 type MatchPartial<
-  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,

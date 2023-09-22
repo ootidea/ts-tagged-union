@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, test } from 'vitest'
 import { createHelperFunctions } from './createHelperFunctions'
-import { AddTagKeyPointer, DEFAULT_TAG_KEY, TaggedUnion } from './index'
+import { AddTagKeyPointer, defaultTagKey, TaggedUnion } from './index'
 
 type Shape = TaggedUnion<{ rect: { width: number; height: number }; circle: { radius: number } }>
 const Shape = createHelperFunctions<Shape>()
@@ -24,9 +24,9 @@ const Response = createHelperFunctions<Response>('status')
 const success = Response.Success({ payload: new Blob() }) as Response
 
 test('Data constructors', () => {
-  expect(circle).toStrictEqual({ [DEFAULT_TAG_KEY]: 'circle', radius: 3 })
+  expect(circle).toStrictEqual({ [defaultTagKey]: 'circle', radius: 3 })
 
-  expect(zero).toStrictEqual({ [DEFAULT_TAG_KEY]: 'Zero' })
+  expect(zero).toStrictEqual({ [defaultTagKey]: 'Zero' })
 
   expect(success).toStrictEqual({
     status: 'Success',
@@ -63,10 +63,10 @@ describe('Narrowing', () => {
       expectTypeOf(circle).toEqualTypeOf<
         AddTagKeyPointer<
           {
-            [DEFAULT_TAG_KEY]: 'circle'
+            [defaultTagKey]: 'circle'
             radius: number
           },
-          typeof DEFAULT_TAG_KEY
+          typeof defaultTagKey
         >
       >()
     }
@@ -75,11 +75,11 @@ describe('Narrowing', () => {
       expectTypeOf(circle).toEqualTypeOf<
         AddTagKeyPointer<
           {
-            [DEFAULT_TAG_KEY]: 'rect'
+            [defaultTagKey]: 'rect'
             width: number
             height: number
           },
-          typeof DEFAULT_TAG_KEY
+          typeof defaultTagKey
         >
       >()
     }
@@ -88,10 +88,10 @@ describe('Narrowing', () => {
       expectTypeOf(one).toEqualTypeOf<
         AddTagKeyPointer<
           {
-            [DEFAULT_TAG_KEY]: 'Succ'
+            [defaultTagKey]: 'Succ'
             pred: NaturalNumber
           },
-          typeof DEFAULT_TAG_KEY
+          typeof defaultTagKey
         >
       >()
     }
@@ -101,11 +101,11 @@ describe('Narrowing', () => {
       expectTypeOf(circle).toEqualTypeOf<
         AddTagKeyPointer<
           {
-            [DEFAULT_TAG_KEY]: 'rect'
+            [defaultTagKey]: 'rect'
             width: number
             height: number
           },
-          typeof DEFAULT_TAG_KEY
+          typeof defaultTagKey
         >
       >()
     }
@@ -114,10 +114,10 @@ describe('Narrowing', () => {
       expectTypeOf(circle).toEqualTypeOf<
         AddTagKeyPointer<
           {
-            [DEFAULT_TAG_KEY]: 'circle'
+            [defaultTagKey]: 'circle'
             radius: number
           },
-          typeof DEFAULT_TAG_KEY
+          typeof defaultTagKey
         >
       >()
     }

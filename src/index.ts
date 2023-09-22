@@ -3,7 +3,7 @@ import { MergeIntersection } from './utility'
 export { createHelperFunctions } from './createHelperFunctions'
 
 /** Default tag key of the tagged union created with this library */
-export const DEFAULT_TAG_KEY = Symbol('DEFAULT_TAG_KEY')
+export const defaultTagKey = Symbol('defaultTagKey')
 
 /**
  * The key of tag-key-pointer property that specify which property is a tag.
@@ -14,10 +14,10 @@ export const DEFAULT_TAG_KEY = Symbol('DEFAULT_TAG_KEY')
  *   | { type: 'circle'; radius: number }
  *   | { type: 'rect'; width: number; height: number }
  * ) & {
- *   [TAG_KEY_POINTER]?: 'type'
+ *   [tagKeyPointer]?: 'type'
  * }
  */
-export declare const TAG_KEY_POINTER: unique symbol
+export declare const tagKeyPointer: unique symbol
 
 /**
  * Define a tagged union type.
@@ -29,10 +29,10 @@ export declare const TAG_KEY_POINTER: unique symbol
  * }>
  * is equivalent to:
  * type Shape = (
- *   | { [DEFAULT_TAG_KEY]: 'circle'; radius: number }
- *   | { [DEFAULT_TAG_KEY]: 'rect'; width: number; height: number }
+ *   | { [defaultTagKey]: 'circle'; radius: number }
+ *   | { [defaultTagKey]: 'rect'; width: number; height: number }
  * ) & {
- *   [TAG_KEY_POINTER]?: typeof DEFAULT_TAG_KEY
+ *   [tagKeyPointer]?: typeof defaultTagKey
  * }
  *
  * @example Custom tag key
@@ -49,19 +49,19 @@ export declare const TAG_KEY_POINTER: unique symbol
  *   | { type: 'circle'; radius: number }
  *   | { type: 'rect'; width: number; height: number }
  * ) & {
- *   [TAG_KEY_POINTER]?: 'type'
+ *   [tagKeyPointer]?: 'type'
  * }
  */
 export type TaggedUnion<
   Payloads extends Record<string | symbol, any>,
-  TagKey extends string | symbol = typeof DEFAULT_TAG_KEY,
+  TagKey extends string | symbol = typeof defaultTagKey,
 > = {
   [K in keyof Payloads]: MergeIntersection<Record<TagKey, K> & Payloads[K]>
-}[keyof Payloads] & { [TAG_KEY_POINTER]?: TagKey }
+}[keyof Payloads] & { [tagKeyPointer]?: TagKey }
 
 /**
  * Add the tag-key-pointer property to the given tagged union type.
- * @see TAG_KEY_POINTER
+ * @see tagKeyPointer
  * @see RemoveTagKeyPointer
  * @example
  * Given the type definition:
@@ -75,19 +75,19 @@ export type TaggedUnion<
  *   | { type: 'circle'; radius: number }
  *   | { type: 'rect'; width: number; height: number }
  * ) & {
- *   [TAG_KEY_POINTER]?: 'type'
+ *   [tagKeyPointer]?: 'type'
  * }
  */
 export type AddTagKeyPointer<TaggedUnion, TagKey extends keyof TaggedUnion> = TaggedUnion & {
-  [TAG_KEY_POINTER]?: TagKey
+  [tagKeyPointer]?: TagKey
 }
 
 /**
  * Remove the tag-key-pointer property from the given tagged union type.
- * @see TAG_KEY_POINTER
+ * @see tagKeyPointer
  * @see AddTagKeyPointer
  */
-export type RemoveTagKeyPointer<TaggedUnion> = Omit<TaggedUnion, typeof TAG_KEY_POINTER>
+export type RemoveTagKeyPointer<TaggedUnion> = Omit<TaggedUnion, typeof tagKeyPointer>
 
 /**
  * Get the tag key of the given tagged union type.
@@ -103,18 +103,18 @@ export type RemoveTagKeyPointer<TaggedUnion> = Omit<TaggedUnion, typeof TAG_KEY_
  * The type TagKeyOf<Shape> will resolve to 'type'
  */
 export type TagKeyOf<TaggedUnion> = TaggedUnion extends {
-  [TAG_KEY_POINTER]?: infer TagKey extends keyof TaggedUnion
+  [tagKeyPointer]?: infer TagKey extends keyof TaggedUnion
 }
   ? TagKey
   : never
 
 export type VariantOf<
-  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
   K extends string | symbol,
-> = Omit<Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>, typeof TAG_KEY_POINTER>
+> = Omit<Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>, typeof tagKeyPointer>
 
 /**
  * @example
@@ -129,12 +129,12 @@ export type VariantOf<
  * type Payload = { radius: number }
  */
 export type PayloadOf<
-  TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
   K extends string | symbol,
 > = Omit<
   Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
-  TagKeyOf<TaggedUnion> | typeof TAG_KEY_POINTER
+  TagKeyOf<TaggedUnion> | typeof tagKeyPointer
 >
