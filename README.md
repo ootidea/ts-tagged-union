@@ -32,7 +32,7 @@ console.log(primary) // { [Symbol(defaultTagKey)]: 'primary' }
 
 ## Pattern matching
 
-To perform pattern matching, use the `match` function.  
+To perform **exhaustive** pattern matching, use the `match` function.  
 
 ```typescript
 const color = Math.random() < 0.5 ? Color.rgb({ r: 255, g: 31, b: 0 }) : Color.primary()
@@ -55,7 +55,7 @@ const isAchromatic = Color.match(
 )
 ```
 
-To perform non-exhaustive pattern matching, use `matchPartial` instead.  
+To perform **non-exhaustive** pattern matching, use `matchPartial` instead.  
 
 ## Type predicates
 
@@ -63,12 +63,12 @@ To determine if it is a specific variant, you can write as follows.
 
 ```typescript
 if (Color.is.rgb(color)) {
-  // Here, narrowing is applied, so you can access each property
+  // Here, the variable is narrowed to the rgb variant type.
   console.log(`rgb: ${color.r}, ${color.g}, ${color.b}`)
 }
 ```
 
-You can also use the `isNot` property.  
+You can use the `isNot` property in exactly the same way.  
 
 ## Custom tag key
 
@@ -76,8 +76,6 @@ The default tag key is the predefined symbol, exported as `defaultTagKey`.
 To define a tagged union type with the specified tag key, you can write as follows.  
 
 ```typescript
-import { type TaggedUnion, createHelperFunctions } from 'ts-tagged-union'
-
 // Specify a custom tag key as the second argument.
 type Response = TaggedUnion<
   {
@@ -89,3 +87,24 @@ type Response = TaggedUnion<
 // You need to provide the tag key as an argument due to TypeScript specifications.
 const Response = createHelperFunctions<Response>('status')
 ```
+
+## Adapting to tagged union types defined without using this library
+
+`createHelperFunctions` and other utilities do not work for tagged union types without a _tag-key-pointer_.  
+The _tag-key-pointer_ is a special hidden property that specify which property is a tag.  
+It exists only at the type level, so it does not affect runtime.  
+
+The type defined with `TaggedUnion<T>` includes the _tag-key-pointer_ property.  
+To manually add it to an existing type, use `AddTagKeyPointer` as follows.  
+
+```typescript
+import { type AddTagKeyPointer, createHelperFunctions } from 'ts-tagged-union'
+
+type RawTaggedUnion =
+  | { type: 'circle', radius: number }
+  | { type: 'rect', width: number; height: number }
+type Shape = AddTagKeyPointer<RawTaggedUnion, 'type'>
+const Shape = createHelperFunctions<TaggedUnion>('type')
+```
+
+If you need to remove the _tag-key-pointer_, use `RemoveTagKeyPointer`.  
