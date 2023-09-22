@@ -11,7 +11,7 @@ This library is essentially an implementation of [algebraic data types](https://
 ## Basic example
 
 ```typescript
-import { type TaggedUnion, helperFunctionsOf } from 'ts-tagged-union'
+import { type TaggedUnion, createHelperFunctions } from 'ts-tagged-union'
 
 // Define a tagged union type
 export type Color = TaggedUnion<{
@@ -20,7 +20,7 @@ export type Color = TaggedUnion<{
   secondary: {}
 }>
 // Get helper functions for the given type
-export const Color = helperFunctionsOf<Color>()
+export const Color = createHelperFunctions<Color>()
 
 // Create with a data constructor
 const rgb = Color.rgb({ r: 255, g: 31, b: 0 })
@@ -76,7 +76,7 @@ The default tag key is the predefined symbol, exported as `DEFAULT_TAG_KEY`.
 To define a tagged union type with the specified tag key, you can write as follows.  
 
 ```typescript
-import { type TaggedUnion, helperFunctionsOf } from 'ts-tagged-union'
+import { type TaggedUnion, createHelperFunctions } from 'ts-tagged-union'
 
 // Specify a custom tag key as the second argument.
 type Response = TaggedUnion<
@@ -87,5 +87,5 @@ type Response = TaggedUnion<
   'status' // Either a string literal or symbol type
 >
 // You need to provide the tag key as an argument due to TypeScript specifications.
-const Response = helperFunctionsOf<Response>('status')
+const Response = createHelperFunctions<Response>('status')
 ```

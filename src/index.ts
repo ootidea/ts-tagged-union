@@ -1,6 +1,6 @@
 import { MergeIntersection } from './utility'
 
-export { helperFunctionsOf } from './helperFunctionsOf'
+export { createHelperFunctions } from './createHelperFunctions'
 
 /** Default tag key of the tagged union created with this library */
 export const DEFAULT_TAG_KEY = Symbol('DEFAULT_TAG_KEY')

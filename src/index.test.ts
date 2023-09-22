@@ -1,14 +1,14 @@
 import { describe, expect, expectTypeOf, test } from 'vitest'
-import { helperFunctionsOf } from './helperFunctionsOf'
+import { createHelperFunctions } from './createHelperFunctions'
 import { AddTagKeyPointer, DEFAULT_TAG_KEY, TaggedUnion } from './index'
 
 type Shape = TaggedUnion<{ rect: { width: number; height: number }; circle: { radius: number } }>
-const Shape = helperFunctionsOf<Shape>()
+const Shape = createHelperFunctions<Shape>()
 const circle = Shape.circle({ radius: 3 }) as Shape
 
 // Recursive type
 type NaturalNumber = TaggedUnion<{ Zero: {}; Succ: { pred: NaturalNumber } }>
-const NaturalNumber = helperFunctionsOf<NaturalNumber>()
+const NaturalNumber = createHelperFunctions<NaturalNumber>()
 const zero = NaturalNumber.Zero()
 const one = NaturalNumber.Succ({ pred: zero })
 
@@ -20,7 +20,7 @@ type Response = TaggedUnion<
   },
   'status'
 >
-const Response = helperFunctionsOf<Response>('status')
+const Response = createHelperFunctions<Response>('status')
 const success = Response.Success({ payload: new Blob() }) as Response
 
 test('Data constructors', () => {

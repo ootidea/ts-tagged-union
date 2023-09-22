@@ -9,7 +9,7 @@ import { AssertExtends, MergeIntersection } from './utility'
  *   circle: { radius: number }
  *   rect: { width: number; height: number }
  * }>
- * const Shape = helperFunctionsOf<Shape>()
+ * const Shape = createHelperFunctions<Shape>()
  * @example Custom tag key
  * type Shape = TaggedUnion<
  *   {
@@ -18,21 +18,21 @@ import { AssertExtends, MergeIntersection } from './utility'
  *   },
  *   'type'
  * >
- * const Shape = helperFunctionsOf<Shape>('type')
+ * const Shape = createHelperFunctions<Shape>('type')
  */
-export function helperFunctionsOf<
+export function createHelperFunctions<
   TaggedUnion extends { [TAG_KEY_POINTER]?: typeof DEFAULT_TAG_KEY } & Record<
     typeof DEFAULT_TAG_KEY,
     string | symbol
   >,
 >(): HelperFunctions<TaggedUnion>
-export function helperFunctionsOf<
+export function createHelperFunctions<
   TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
   >,
 >(tagKey: TagKeyOf<TaggedUnion>): HelperFunctions<TaggedUnion>
-export function helperFunctionsOf<
+export function createHelperFunctions<
   TaggedUnion extends { [TAG_KEY_POINTER]?: keyof TaggedUnion } & Record<
     TagKeyOf<TaggedUnion>,
     string | symbol
