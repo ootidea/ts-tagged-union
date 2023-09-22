@@ -32,7 +32,7 @@ console.log(primary) // { [Symbol(DEFAULT_TAG_KEY)]: 'primary' }
 
 ## Pattern matching
 
-To perform pattern matching, use the `match` function.
+To perform pattern matching, use the `match` function.  
 
 ```typescript
 const color = Math.random() < 0.5 ? Color.rgb({ r: 255, g: 31, b: 0 }) : Color.primary()
@@ -43,7 +43,7 @@ const cssColor = Color.match(color, {
 })
 ```
 
-The third argument serves as a default case.
+The third argument serves as a default case.  
 
 ```typescript
 const isAchromatic = Color.match(
@@ -57,7 +57,7 @@ const isAchromatic = Color.match(
 
 ## Type predicates
 
-To determine if it is a specific variant, you can write as follows.
+To determine if it is a specific variant, you can write as follows.  
 
 ```typescript
 if (Color.is.rgb(color)) {
@@ -66,11 +66,11 @@ if (Color.is.rgb(color)) {
 }
 ```
 
-You can also use the `isNot` property.
+You can also use the `isNot` property.  
 
 ## Custom tag key
 
-The default tag key is the symbol, exported as `DEFAULT_TAG_KEY`.  
+The default tag key is the predefined symbol, exported as `DEFAULT_TAG_KEY`.  
 To define a tagged union type with the specified tag key, you can write as follows.  
 
 ```typescript
