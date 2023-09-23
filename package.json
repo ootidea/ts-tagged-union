@@ -2,7 +2,19 @@
   "name": "ts-tagged-union",
   "version": "0.3.6",
   "description": "A modern TypeScript library designed to reduce boilerplate for tagged unions, also known as discriminated unions. This library is essentially an implementation of algebraic data types.",
-  "keywords": [],
+  "keywords": [
+    "discriminated-union",
+    "tagged-union",
+    "Algebraic-Data-Types",
+    "coproduct",
+    "pattern-matching",
+    "exhaustive",
+    "type-predicate",
+    "narrowing",
+    "type-guard",
+    "functional-programming",
+    "functional"
+  ],
   "homepage": "https://github.com/ootidea/ts-tagged-union#readme",
   "bugs": {
     "url": "https://github.com/ootidea/ts-tagged-union/issues"
