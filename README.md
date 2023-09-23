@@ -1,6 +1,6 @@
 <h1 align="center">ts-tagged-union</h1>
 
-`ts-tagged-union` is a modern TypeScript library designed to reduce boilerplate for _tagged unions_, also known as _discriminated unions_.  
+A modern TypeScript library designed to reduce boilerplate for _tagged unions_, also known as _discriminated unions_.  
 This library is also an implementation of [algebraic data types](https://wikipedia.org/wiki/Algebraic_data_type).  
 It can also be described as a library that adds support for [algebraic data types](https://wikipedia.org/wiki/Algebraic_data_type) to TypeScript.  
 This library adds support for algebraic data types to TypeScript.  
