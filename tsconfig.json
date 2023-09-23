@@ -6,7 +6,8 @@
     "moduleResolution": "bundler",
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": false,
+    "noErrorTruncation": true
   },
   "include": ["src"]
 }
