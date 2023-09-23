@@ -15,6 +15,8 @@ This library is also an implementation of [algebraic data types](https://wikiped
 
 ## Basic example
 
+This is an example of defining a simple tagged union type and creating its values.  
+
 ```ts
 import { type TaggedUnion, createHelperFunctions } from 'ts-tagged-union'
 
@@ -84,7 +86,7 @@ The key of the property used to distinguish each variant is called _tag key_.
 You can specify a tag key as the second argument to `TaggedUnion<T>` as follows.  
 
 ```ts
-// Specify a custom tag key as the second argument.
+// Define a tagged union type with a custom tag key, 'status'
 type Response = TaggedUnion<
   {
     Success: { payload: Blob }
