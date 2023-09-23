@@ -34,7 +34,7 @@ test('Data constructors', () => {
   })
 })
 
-describe('Type predicates', () => {
+describe('Type guard functions', () => {
   test('is', () => {
     expect(Shape.is.circle(circle)).toBe(true)
     expect(Shape.is.rect(circle)).toBe(false)
