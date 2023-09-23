@@ -1,12 +1,17 @@
 # ts-tagged-union
 
-`ts-tagged-union` is a TypeScript library for _tagged unions_, also known as _discriminated unions_.  
-It offers the following helper functions for any tagged unions:  
-1. Data constructors
-2. Pattern matching function
-3. Type predicates
-
+`ts-tagged-union` is a modern TypeScript library designed to reduce boilerplate for _tagged unions_, also known as _discriminated unions_.  
 This library is essentially an implementation of [algebraic data types](https://wikipedia.org/wiki/Algebraic_data_type).  
+
+## Features
+
+- Define tagged union types easily
+- Generate following helper functions for each tagged union type without code generation!
+    1. **Data constructors**
+    2. **Pattern matching functions**
+    3. **Type predicates**
+- 0 dependencies
+- Works on both browsers and Node.js
 
 ## Basic example
 
@@ -19,7 +24,8 @@ export type Color = TaggedUnion<{
   primary: {}
   secondary: {}
 }>
-// Get helper functions for the given type
+
+// Get helper functions for the type
 export const Color = createHelperFunctions<Color>()
 
 // Create with a data constructor
@@ -35,7 +41,8 @@ console.log(primary) // { [Symbol(defaultTagKey)]: 'primary' }
 To perform **exhaustive** pattern matching, use the `match` function.  
 
 ```typescript
-const color = Math.random() < 0.5 ? Color.rgb({ r: 255, g: 31, b: 0 }) : Color.primary()
+const color = Math.random() < 0.5 ? Color.primary() : Color.secondary()
+
 const cssColor = Color.match(color, {
   rgb: ({ r, g, b }) => `rgb(${r}, ${g}, ${b})`,
   primary: () => '#C0FFEE', 
@@ -43,15 +50,13 @@ const cssColor = Color.match(color, {
 })
 ```
 
-The third argument serves as a default case.  
+The third argument acts as a so-called default case, as follows.  
 
 ```typescript
 const isAchromatic = Color.match(
   color,
-  {
-    rgb: ({ r, g, b }) => r === g && g === b,
-  },
-  () => false,
+  { rgb: ({ r, g, b }) => r === g && g === b },
+  (other) => false,
 )
 ```
 
@@ -59,16 +64,19 @@ To perform **non-exhaustive** pattern matching, use `matchPartial` instead.
 
 ## Type predicates
 
-To determine if it is a specific variant, you can write as follows.  
+Type predicates are available as the `is` and `isNot` properties, as shown below.  
 
 ```typescript
 if (Color.is.rgb(color)) {
   // Here, the variable is narrowed to the rgb variant type.
   console.log(`rgb: ${color.r}, ${color.g}, ${color.b}`)
 }
-```
 
-You can use the `isNot` property in exactly the same way.  
+if (Color.isNot.secondary(color)) {
+  // Here, the variable is narrowed to the rgb or primary variant type.
+  console.log(color)
+}
+```
 
 ## Custom tag key
 
@@ -91,10 +99,11 @@ const Response = createHelperFunctions<Response>('status')
 ## Adapting to tagged union types defined without using this library
 
 `createHelperFunctions` and other utilities do not work for tagged union types without a _tag-key-pointer_.  
-The _tag-key-pointer_ is a special hidden property that specify which property is a tag.  
+The _tag-key-pointer_ is a special hidden property that specifies which property is a tag.  
 It exists only at the type level, so it does not affect runtime.  
+The key of the property is the predefined symbol exported as `tagKeyPointer`.  
 
-The type defined with `TaggedUnion<T>` includes the _tag-key-pointer_ property.  
+The type defined with `TaggedUnion<T>` has the _tag-key-pointer_ property.  
 To manually add it to an existing type, use `AddTagKeyPointer` as follows.  
 
 ```typescript
