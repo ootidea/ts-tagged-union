@@ -109,10 +109,7 @@ export type TagKeyOf<TaggedUnion> = TaggedUnion extends {
   : never
 
 export type VariantOf<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
-    TagKeyOf<TaggedUnion>,
-    string | symbol
-  >,
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
   K extends string | symbol,
 > = Omit<Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>, typeof tagKeyPointer>
 
@@ -129,12 +126,6 @@ export type VariantOf<
  * type Payload = { radius: number }
  */
 export type PayloadOf<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
-    TagKeyOf<TaggedUnion>,
-    string | symbol
-  >,
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
   K extends string | symbol,
-> = Omit<
-  Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>,
-  TagKeyOf<TaggedUnion> | typeof tagKeyPointer
->
+> = Omit<Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>, TagKeyOf<TaggedUnion> | typeof tagKeyPointer>

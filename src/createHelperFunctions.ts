@@ -21,22 +21,13 @@ import { AssertExtends, MergeIntersection } from './utility'
  * const Shape = createHelperFunctions<Shape>('type')
  */
 export function createHelperFunctions<
-  TaggedUnion extends { [tagKeyPointer]?: typeof defaultTagKey } & Record<
-    typeof defaultTagKey,
-    string | symbol
-  >,
+  TaggedUnion extends { [tagKeyPointer]?: typeof defaultTagKey } & Record<typeof defaultTagKey, string | symbol>,
 >(): HelperFunctions<TaggedUnion>
 export function createHelperFunctions<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
-    TagKeyOf<TaggedUnion>,
-    string | symbol
-  >,
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
 >(tagKey: TagKeyOf<TaggedUnion>): HelperFunctions<TaggedUnion>
 export function createHelperFunctions<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
-    TagKeyOf<TaggedUnion>,
-    string | symbol
-  >,
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
 >(tagKey: TagKeyOf<TaggedUnion> = defaultTagKey as any): HelperFunctions<TaggedUnion> {
   return new Proxy(
     {
@@ -56,10 +47,7 @@ export function createHelperFunctions<
 }
 
 type HelperFunctions<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
-    TagKeyOf<TaggedUnion>,
-    string | symbol
-  >,
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
 > = MergeIntersection<
   {
     match: Match<TaggedUnion>
@@ -68,25 +56,20 @@ type HelperFunctions<
     isNot: IsNot<TaggedUnion>
   } & {
     // If the payload is empty ({}), the argument can be omitted.
-    [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]: PayloadOf<
-      TaggedUnion,
-      K
-    > extends Record<keyof any, never>
+    [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]: PayloadOf<TaggedUnion, K> extends Record<
+      keyof any,
+      never
+    >
       ? {
           (): Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>
           (payload: {}): Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>
         }
-      : (
-          payload: PayloadOf<TaggedUnion, K>,
-        ) => Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>
+      : (payload: PayloadOf<TaggedUnion, K>) => Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>
   }
 >
 
 function createIs<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
-    TagKeyOf<TaggedUnion>,
-    string | symbol
-  >,
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
 >(tagKey: TagKeyOf<TaggedUnion>): Is<TaggedUnion> {
   return new Proxy(
     {},
@@ -98,22 +81,15 @@ function createIs<
   ) as any
 }
 
-type Is<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
-    TagKeyOf<TaggedUnion>,
-    string | symbol
-  >,
-> = MergeIntersection<{
-  [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]: (
-    taggedUnion: TaggedUnion,
-  ) => taggedUnion is Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>
-}>
+type Is<TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>> =
+  MergeIntersection<{
+    [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]: (
+      taggedUnion: TaggedUnion,
+    ) => taggedUnion is Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>
+  }>
 
 function createIsNot<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
-    TagKeyOf<TaggedUnion>,
-    string | symbol
-  >,
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
 >(tagKey: TagKeyOf<TaggedUnion>): Is<TaggedUnion> {
   return new Proxy(
     {},
@@ -126,10 +102,7 @@ function createIsNot<
 }
 
 type IsNot<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
-    TagKeyOf<TaggedUnion>,
-    string | symbol
-  >,
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
 > = MergeIntersection<{
   [K in AssertExtends<TaggedUnion[TagKeyOf<TaggedUnion>], string | symbol>]: (
     taggedUnion: TaggedUnion,
@@ -137,20 +110,13 @@ type IsNot<
 }>
 
 function createMatch<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
-    TagKeyOf<TaggedUnion>,
-    string | symbol
-  >,
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
 >(tagKey: TagKeyOf<TaggedUnion>) {
   return function <
     Cases extends {
-      [K in AssertExtends<TagKeyOf<TaggedUnion>, string | symbol>]?: (
-        variant: VariantOf<TaggedUnion, K>,
-      ) => unknown
+      [K in AssertExtends<TagKeyOf<TaggedUnion>, string | symbol>]?: (variant: VariantOf<TaggedUnion, K>) => unknown
     },
-    DefaultCase extends (
-      taggedUnion: VariantOf<TaggedUnion, Exclude<keyof Cases, number>>,
-    ) => unknown,
+    DefaultCase extends (taggedUnion: VariantOf<TaggedUnion, Exclude<keyof Cases, number>>) => unknown,
   >(
     taggedUnion: TaggedUnion,
     cases: Cases,
@@ -165,10 +131,7 @@ function createMatch<
 }
 
 type Match<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
-    TagKeyOf<TaggedUnion>,
-    string | symbol
-  >,
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
 > = {
   <
     Cases extends {
@@ -186,9 +149,7 @@ type Match<
         variant: VariantOf<TaggedUnion, K>,
       ) => unknown
     },
-    DefaultCase extends (
-      taggedUnion: VariantOf<TaggedUnion, Exclude<keyof Cases, number>>,
-    ) => unknown,
+    DefaultCase extends (taggedUnion: VariantOf<TaggedUnion, Exclude<keyof Cases, number>>) => unknown,
   >(
     taggedUnion: TaggedUnion,
     cases: Cases,
@@ -197,10 +158,7 @@ type Match<
 }
 
 function createMatchPartial<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
-    TagKeyOf<TaggedUnion>,
-    string | symbol
-  >,
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
 >(tagKey: TagKeyOf<TaggedUnion>): MatchPartial<TaggedUnion> {
   function matchPartial<
     Cases extends {
@@ -223,10 +181,7 @@ function createMatchPartial<
 }
 
 type MatchPartial<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<
-    TagKeyOf<TaggedUnion>,
-    string | symbol
-  >,
+  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
 > = {
   <
     Cases extends {
