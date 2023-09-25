@@ -1,3 +1,4 @@
+<span />
 <h1 align="center">ts-tagged-union</h1>
 
 A modern TypeScript library designed to reduce boilerplate for _tagged unions_, also known as _discriminated unions_.  
@@ -52,7 +53,7 @@ const cssColor = Color.match(color, {
 })
 ```
 
-The third argument acts as a so-called default case, as follows.  
+The third argument acts as a so-called **default case**, as follows.  
 
 ```ts
 const isAchromatic = Color.match(
@@ -66,7 +67,7 @@ To perform **non-exhaustive** pattern matching, use `matchPartial` instead.
 
 ## Type guard functions
 
-Type guard functions are available as the `is` and `isNot` properties, as shown below.  
+Type guard functions are available as the **`is`** and **`isNot`** properties, as shown below.  
 
 ```ts
 if (Color.is.rgb(color)) {
