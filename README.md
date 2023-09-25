@@ -41,7 +41,7 @@ console.log(primary) // { [Symbol(defaultTagKey)]: 'primary' }
 
 ## Pattern matching
 
-To perform **exhaustive** pattern matching, use the `match` function.  
+To perform **exhaustive** pattern matching, use the **`match`** function.  
 
 ```ts
 const color = Math.random() < 0.5 ? Color.primary() : Color.secondary()
@@ -63,7 +63,7 @@ const isAchromatic = Color.match(
 )
 ```
 
-To perform **non-exhaustive** pattern matching, use `matchPartial` instead.  
+To perform **non-exhaustive** pattern matching, use **`matchPartial`** instead.  
 
 ## Type guard functions
 
@@ -106,7 +106,7 @@ The _tag-key-pointer_ is a special hidden property that specifies which property
 It exists only at the type level, so it does not affect runtime.  
 
 The type defined with `TaggedUnion<T>` has the _tag-key-pointer_ property.  
-To manually add it to an existing type, use `AddTagKeyPointer` as follows.  
+To manually add it to an existing type, use **`AddTagKeyPointer`** as follows.  
 
 ```ts
 import { type AddTagKeyPointer, createHelperFunctions } from 'ts-tagged-union'
@@ -119,4 +119,4 @@ type Shape = AddTagKeyPointer<RawTaggedUnion, 'type'>
 const Shape = createHelperFunctions<TaggedUnion>('type')
 ```
 
-If you need to remove the _tag-key-pointer_, use `RemoveTagKeyPointer`.  
+If you need to remove the _tag-key-pointer_, use **`RemoveTagKeyPointer`**.  
