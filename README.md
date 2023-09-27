@@ -116,7 +116,7 @@ type RawTaggedUnion =
   | { type: 'rect', width: number; height: number }
 
 type Shape = AddTagKeyPointer<RawTaggedUnion, 'type'>
-const Shape = createHelperFunctions<TaggedUnion>('type')
+const Shape = createHelperFunctions<Shape>('type')
 ```
 
 If you need to remove the _tag-key-pointer_, use **`RemoveTagKeyPointer`**.  

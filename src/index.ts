@@ -108,6 +108,15 @@ export type TagKeyOf<TaggedUnion> = TaggedUnion extends {
   ? TagKey
   : never
 
+/**
+ * @example
+ * Given the type definition:
+ * type Shape = TaggedUnion<{
+ *   circle: { radius: number }
+ *   rect: { width: number; height: number }
+ * }>
+ * The type VariantOf<Shape, 'circle'> will resolve to { [defaultTagKey]: 'circle', radius: number }.
+ */
 export type VariantOf<
   TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
   K extends string | symbol,
@@ -120,10 +129,7 @@ export type VariantOf<
  *   circle: { radius: number }
  *   rect: { width: number; height: number }
  * }>
- * The type:
- * type Payload = PayloadOf<Shape, 'circle'>
- * will resolve to:
- * type Payload = { radius: number }
+ * The type PayloadOf<Shape, 'circle'> will resolve to { radius: number }.
  */
 export type PayloadOf<
   TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
