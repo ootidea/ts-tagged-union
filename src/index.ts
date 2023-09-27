@@ -69,16 +69,16 @@ export type TaggedUnion<
  *   | { type: 'circle', radius: number }
  *   | { type: 'rect', width: number; height: number }
  * The type:
- * type TaggedUnion = AddTagKeyPointer<RawTaggedUnion, 'type'>
+ * AddTagKeyPointer<RawTaggedUnion, 'type'>
  * will resolve to:
- * type TaggedUnion = (
+ * (
  *   | { type: 'circle'; radius: number }
  *   | { type: 'rect'; width: number; height: number }
  * ) & {
  *   [tagKeyPointer]?: 'type'
  * }
  */
-export type AddTagKeyPointer<TaggedUnion, TagKey extends keyof TaggedUnion> = TaggedUnion & {
+export type AddTagKeyPointer<T, TagKey extends keyof T> = T & {
   [tagKeyPointer]?: TagKey
 }
 
@@ -87,7 +87,7 @@ export type AddTagKeyPointer<TaggedUnion, TagKey extends keyof TaggedUnion> = Ta
  * @see tagKeyPointer
  * @see AddTagKeyPointer
  */
-export type RemoveTagKeyPointer<TaggedUnion> = Omit<TaggedUnion, typeof tagKeyPointer>
+export type RemoveTagKeyPointer<T> = Omit<T, typeof tagKeyPointer>
 
 /**
  * Get the tag key of the given tagged union type.
@@ -102,8 +102,8 @@ export type RemoveTagKeyPointer<TaggedUnion> = Omit<TaggedUnion, typeof tagKeyPo
  * >
  * The type TagKeyOf<Shape> will resolve to 'type'
  */
-export type TagKeyOf<TaggedUnion> = TaggedUnion extends {
-  [tagKeyPointer]?: infer TagKey extends keyof TaggedUnion
+export type TagKeyOf<T> = T extends {
+  [tagKeyPointer]?: infer TagKey extends keyof T
 }
   ? TagKey
   : never
@@ -118,9 +118,9 @@ export type TagKeyOf<TaggedUnion> = TaggedUnion extends {
  * The type VariantOf<Shape, 'circle'> will resolve to { [defaultTagKey]: 'circle', radius: number }.
  */
 export type VariantOf<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
+  T extends { [tagKeyPointer]?: keyof T } & Record<TagKeyOf<T>, string | symbol>,
   K extends string | symbol,
-> = Omit<Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>, typeof tagKeyPointer>
+> = Omit<Extract<T, Record<TagKeyOf<T>, K>>, typeof tagKeyPointer>
 
 /**
  * @example
@@ -132,6 +132,6 @@ export type VariantOf<
  * The type PayloadOf<Shape, 'circle'> will resolve to { radius: number }.
  */
 export type PayloadOf<
-  TaggedUnion extends { [tagKeyPointer]?: keyof TaggedUnion } & Record<TagKeyOf<TaggedUnion>, string | symbol>,
+  T extends { [tagKeyPointer]?: keyof T } & Record<TagKeyOf<T>, string | symbol>,
   K extends string | symbol,
-> = Omit<Extract<TaggedUnion, Record<TagKeyOf<TaggedUnion>, K>>, TagKeyOf<TaggedUnion> | typeof tagKeyPointer>
+> = Omit<Extract<T, Record<TagKeyOf<T>, K>>, TagKeyOf<T> | typeof tagKeyPointer>
