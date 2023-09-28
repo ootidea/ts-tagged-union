@@ -109,6 +109,7 @@ export type TagKeyOf<T> = T extends {
   : never
 
 /**
+ * Extract the variant type with the specific tag from a tagged union type.
  * @example
  * Given the type definition:
  * type Shape = TaggedUnion<{
@@ -123,6 +124,7 @@ export type VariantOf<
 > = Omit<Extract<T, Record<TagKeyOf<T>, K>>, typeof tagKeyPointer>
 
 /**
+ * Extract the payload type of the variant with the specific tag from a tagged union type.
  * @example
  * Given the type definition:
  * type Shape = TaggedUnion<{
