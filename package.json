@@ -1,7 +1,7 @@
 {
   "name": "ts-tagged-union",
   "version": "0.5.0",
-  "description": "A modern TypeScript library designed to reduce boilerplate for tagged unions, also known as discriminated unions. This library is essentially an implementation of algebraic data types.",
+  "description": "A modern TypeScript library designed to reduce boilerplate for tagged unions, also known as discriminated unions. This library is also an implementation of algebraic data types",
   "keywords": [
     "discriminated-union",
     "tagged-union",

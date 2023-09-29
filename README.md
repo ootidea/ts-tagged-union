@@ -4,7 +4,7 @@
 A modern TypeScript library designed to reduce boilerplate for _tagged unions_, also known as _discriminated unions_.  
 This library is also an implementation of [algebraic data types](https://wikipedia.org/wiki/Algebraic_data_type).  
 
-### Features
+## Features
 
 - Define tagged union types easily
 - Generate following helper functions for each tagged union type (without code generation 👍)
@@ -14,7 +14,7 @@ This library is also an implementation of [algebraic data types](https://wikiped
 - 0 dependencies
 - Works on both browsers and Node.js
 
-### Basic example
+## Basic example
 
 Here is an example of defining a simple tagged union type and creating its values.  
 
@@ -39,7 +39,7 @@ console.log(rgb) // { r: 255, g: 31, b: 0, [Symbol(defaultTagKey)]: 'rgb' }
 console.log(primary) // { [Symbol(defaultTagKey)]: 'primary' }
 ```
 
-### Pattern matching
+## Pattern matching
 
 To perform **exhaustive** pattern matching, use the **`match`** function.  
 
@@ -65,7 +65,7 @@ const isAchromatic = Color.match(
 
 To perform **non-exhaustive** pattern matching, use **`matchPartial`** instead.  
 
-### Type guard functions
+## Type guard functions
 
 Type guard functions are available as the **`is`** and **`isNot`** properties, as shown below.  
 
@@ -81,7 +81,7 @@ if (Color.isNot.secondary(color)) {
 }
 ```
 
-### Custom tag key
+## Custom tag key
 
 The key of the property used to distinguish each variant is called _tag key_.  
 You can specify a tag key as the second argument to `TaggedUnion<T>` as follows.  
@@ -99,7 +99,7 @@ type Response = TaggedUnion<
 const Response = createHelperFunctions<Response>('status')
 ```
 
-### Adapters for tagged union types defined without using this library
+## Adapters for tagged union types defined without using this library
 
 `createHelperFunctions` and other utilities do not work for tagged union types without a _tag-key-pointer_.  
 The _tag-key-pointer_ is a special hidden property that specifies which property is a tag.  
@@ -121,15 +121,15 @@ const Shape = createHelperFunctions<Shape>('type')
 
 If you need to remove the _tag-key-pointer_, use **`RemoveTagKeyPointer`**.  
 
-### Other utilities
+## Other utilities
 
 There are also several other utilities.  
 
-<dl>
-  <dt><code>TagKeyOf&lt;T></code></dt>
-  <dd>Get the tag key of the given tagged union type</dd>
-  <dt><code>VariantOf&lt;T, TagKey></code></dt>
-  <dd>Extract the variant type with the specific tag from a tagged union type</dd>
-  <dt><code>PayloadOf&lt;T, TagKey></code></dt>
-  <dd>Extract the payload type of the variant with the specific tag from a tagged union type</dd>
-</dl>
+### `TagKeyOf<T>`
+Get the tag key of the given tagged union type.
+
+### `VariantOf<T, TagKey>`
+Extract the variant type with the specific tag from a tagged union type.
+
+### `PayloadOf<T, TagKey>`
+Extract the payload type of the variant with the specific tag from a tagged union type.
