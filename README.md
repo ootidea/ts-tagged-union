@@ -125,11 +125,11 @@ If you need to remove the _tag-key-pointer_, use **`RemoveTagKeyPointer`**.
 
 There are also several other utilities.  
 
-### `TagKeyOf<T>`
+#### `TagKeyOf<T>`
 Get the tag key of the given tagged union type.
 
-### `VariantOf<T, TagKey>`
+#### `VariantOf<T, TagKey>`
 Extract the variant type with the specific tag from a tagged union type.
 
-### `PayloadOf<T, TagKey>`
+#### `PayloadOf<T, TagKey>`
 Extract the payload type of the variant with the specific tag from a tagged union type.
