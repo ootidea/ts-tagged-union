@@ -35,6 +35,7 @@ export function createHelperFunctions<T extends { [tagKeyPointer]?: keyof T } & 
       matchPartial: createMatchPartial<T>(tagKey),
       is: createIs<T>(tagKey),
       isNot: createIsNot<T>(tagKey),
+      tagKey,
     },
     {
       get(target, key) {
@@ -53,6 +54,7 @@ type HelperFunctions<T extends { [tagKeyPointer]?: keyof T } & Record<TagKeyOf<T
       matchPartial: MatchPartial<T>
       is: Is<T>
       isNot: IsNot<T>
+      tagKey: TagKeyOf<T>
     } & {
       // If the payload is empty ({}), the argument can be omitted.
       [K in AssertExtends<T[TagKeyOf<T>], string | symbol>]: PayloadOf<T, K> extends Record<keyof any, never>

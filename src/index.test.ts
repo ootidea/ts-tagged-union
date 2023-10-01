@@ -196,3 +196,9 @@ describe('Pattern matching', () => {
     ).toBe(undefined)
   })
 })
+
+test('tagKey property', () => {
+  expect(Shape.tagKey).toBe(defaultTagKey)
+  expect(NaturalNumber.tagKey).toBe(defaultTagKey)
+  expect(Response.tagKey).toBe('status')
+})
