@@ -50,10 +50,58 @@ export function createHelperFunctions<T extends { [tagKeyPointer]?: keyof T } & 
 type HelperFunctions<T extends { [tagKeyPointer]?: keyof T } & Record<TagKeyOf<T>, string | symbol>> =
   MergeIntersection<
     {
+      /**
+       * Exhaustive pattern matching.
+       * @example
+       * const area = Shape.match(circle, {
+       *   rect: ({ width, height }) => width * height,
+       *   circle: ({ radius }) => radius * radius * Math.PI,
+       * })
+       * @example With default case
+       * const isAchromatic = Color.match(
+       *   color,
+       *   { rgb: ({ r, g, b }) => r === g && g === b },
+       *   (other) => false,
+       * )
+       */
       match: Match<T>
+      /**
+       * Non-exhaustive pattern matching.
+       * @example
+       * const width = Shape.matchPartial(shape, {
+       *   rect: ({ width }) => width,
+       * })
+       */
       matchPartial: MatchPartial<T>
+      /**
+       * A type guard function that checks if the given object matches the specified variant.
+       * @example
+       * if (Shape.is.circle(shape)) {
+       *   console.log(shape.radius)
+       * }
+       */
       is: Is<T>
+      /**
+       * A type guard function that checks if the given object does not match the specified variant.
+       * @example
+       * if (Shape.isNot.circle(shape)) {
+       *   console.log(shape)
+       * }
+       */
       isNot: IsNot<T>
+      /**
+       * The tag key of the tagged union type.
+       * @example
+       * type Shape = TaggedUnion<
+       *   {
+       *     circle: { radius: number }
+       *     rect: { width: number; height: number }
+       *   },
+       *   'type'
+       * >
+       * const Shape = createHelperFunctions<Shape>('type')
+       * console.log(Shape.tagKey) // 'type'
+       */
       tagKey: TagKeyOf<T>
     } & {
       // If the payload is empty ({}), the argument can be omitted.
