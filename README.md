@@ -132,8 +132,8 @@ There are also several other utilities.
 #### `TagKeyOf<T>`
 Get the tag key of the given tagged union type.
 
-#### `VariantOf<T, TagKey>`
+#### `VariantOf<T, Tag>`
 Extract the variant type with the specific tag from a tagged union type.
 
-#### `PayloadOf<T, TagKey>`
+#### `PayloadOf<T, Tag>`
 Extract the payload type of the variant with the specific tag from a tagged union type.
