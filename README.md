@@ -6,13 +6,13 @@ This library is also an implementation of [algebraic data types](https://wikiped
 
 ## Features
 
-- Define tagged union types easily
-- Generate following helper functions for each tagged union type (without code generation 👍)
+- Defines tagged union types easily, including recursive ones.
+- Generates following helper functions for each tagged union type (without code generation 👍)
     1. **Data constructors**
     2. **Pattern matching functions**
-    3. **Type guard functions**
-- 0 dependencies
+    3. **Type guard functions** ([type predicates](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates))
 - Works on both browsers and Node.js
+- 0 dependencies
 
 ## Basic example
 
@@ -41,7 +41,7 @@ console.log(primary) // { [Symbol(defaultTagKey)]: 'primary' }
 
 ## Pattern matching
 
-To perform **exhaustive** pattern matching, use the **`match`** function.  
+To perform pattern matching with **exhaustiveness checking**, use the **`match`** function.  
 
 ```ts
 const color = Math.random() < 0.5 ? Color.primary() : Color.secondary()
@@ -53,7 +53,7 @@ const cssColor = Color.match(color, {
 })
 ```
 
-The third argument acts as a so-called **default case**, as follows.  
+The third argument serves as a so-called **default case**, as follows.  
 
 ```ts
 const isAchromatic = Color.match(
@@ -63,7 +63,7 @@ const isAchromatic = Color.match(
 )
 ```
 
-To perform **non-exhaustive** pattern matching, use **`matchPartial`** instead.  
+To perform pattern matching without **exhaustiveness checking**, use the **`matchPartial`** instead.  
 
 ## Type guard functions
 
@@ -72,7 +72,7 @@ Type guard functions are available as the **`is`** and **`isNot`** properties, a
 ```ts
 if (Color.is.rgb(color)) {
   // Here, the variable is narrowed to the rgb variant type.
-  console.log(`rgb: ${color.r}, ${color.g}, ${color.b}`)
+  console.log(color.r, color.g, color.b)
 }
 
 if (Color.isNot.secondary(color)) {
@@ -97,6 +97,10 @@ type Response = TaggedUnion<
 >
 // You need to provide the tag key as an argument due to TypeScript specifications.
 const Response = createHelperFunctions<Response>('status')
+
+const failure = Response.Failure({ message: 'Not found' })
+console.log(failure.status) // Failure
+console.log(Response.tagKey) // status
 ```
 
 ## Adapters for tagged union types defined without using this library
