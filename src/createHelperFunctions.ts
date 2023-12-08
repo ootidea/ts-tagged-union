@@ -159,7 +159,7 @@ function createMatch<T extends { [tagKeyPointer]?: keyof T } & Record<TagKeyOf<T
     Cases extends {
       [K in AssertExtends<TagKeyOf<T>, string | symbol>]?: (variant: VariantOf<T, K>) => unknown
     },
-    DefaultCase extends (taggedUnion: VariantOf<T, Exclude<keyof Cases, number>>) => unknown,
+    DefaultCase extends (taggedUnion: VariantOf<T, Exclude<T[TagKeyOf<T>], keyof Cases>>) => unknown,
   >(
     taggedUnion: T,
     cases: Cases,
@@ -186,7 +186,7 @@ type Match<T extends { [tagKeyPointer]?: keyof T } & Record<TagKeyOf<T>, string 
     Cases extends {
       [K in AssertExtends<T[TagKeyOf<T>], string | symbol>]?: (variant: VariantOf<T, K>) => unknown
     },
-    DefaultCase extends (taggedUnion: VariantOf<T, Exclude<keyof Cases, number>>) => unknown,
+    DefaultCase extends (taggedUnion: VariantOf<T, Exclude<T[TagKeyOf<T>], keyof Cases>>) => unknown,
   >(
     taggedUnion: T,
     cases: Cases,
