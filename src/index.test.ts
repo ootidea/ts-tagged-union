@@ -22,6 +22,7 @@ type Response = TaggedUnion<
 >
 const Response = createHelperFunctions<Response>('status')
 const success = Response.Success({ payload: new Blob() }) as Response
+const failure = Response.Failure({ message: 'Something went wrong' }) as Response
 
 test('Data constructors', () => {
   expect(circle).toStrictEqual({ [defaultTagKey]: 'circle', radius: 3 })
@@ -129,7 +130,7 @@ describe('Narrowing', () => {
 })
 
 describe('Pattern matching', () => {
-  test('match', () => {
+  test('match without default case', () => {
     expect(
       Shape.match(circle, {
         rect: ({ width, height }) => width * height,
@@ -174,7 +175,7 @@ describe('Pattern matching', () => {
     ).toBe(0)
   })
 
-  test('matchPartial', () => {
+  test('matchPartial without default case', () => {
     expect(
       Shape.matchPartial(circle, {
         rect: ({ width, height }) => width * height,
@@ -183,17 +184,32 @@ describe('Pattern matching', () => {
     ).toBe(3 * 3 * Math.PI)
 
     expect(
-      NaturalNumber.matchPartial(one, {
-        Zero: () => undefined,
+      NaturalNumber.matchPartial(zero, {
         Succ: ({ pred }) => pred,
       }),
-    ).toStrictEqual(zero)
+    ).toBe(undefined)
+  })
+
+  test('matchPartial with default case', () => {
+    expect(
+      Response.matchPartial(
+        success,
+        {
+          Failure: ({ message }) => message,
+        },
+        () => 'success!',
+      ),
+    ).toBe('success!')
 
     expect(
-      Response.matchPartial(success, {
-        Failure: ({ message }) => message,
-      }),
-    ).toBe(undefined)
+      Response.matchPartial(
+        failure,
+        {
+          Failure: () => 0,
+        },
+        ({ payload }) => payload.size,
+      ),
+    ).toBe(0)
   })
 })
 

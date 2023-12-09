@@ -159,7 +159,9 @@ function createMatch<T extends { [tagKeyPointer]?: keyof T } & Record<TagKeyOf<T
     Cases extends {
       [K in AssertExtends<TagKeyOf<T>, string | symbol>]?: (variant: VariantOf<T, K>) => unknown
     },
-    DefaultCase extends (taggedUnion: VariantOf<T, Exclude<T[TagKeyOf<T>], keyof Cases>>) => unknown,
+    DefaultCase extends (
+      taggedUnion: VariantOf<T, Exclude<AssertExtends<T[TagKeyOf<T>], string | symbol>, keyof Cases>>,
+    ) => unknown,
   >(
     taggedUnion: T,
     cases: Cases,
@@ -186,7 +188,9 @@ type Match<T extends { [tagKeyPointer]?: keyof T } & Record<TagKeyOf<T>, string 
     Cases extends {
       [K in AssertExtends<T[TagKeyOf<T>], string | symbol>]?: (variant: VariantOf<T, K>) => unknown
     },
-    DefaultCase extends (taggedUnion: VariantOf<T, Exclude<T[TagKeyOf<T>], keyof Cases>>) => unknown,
+    DefaultCase extends (
+      taggedUnion: VariantOf<T, Exclude<AssertExtends<T[TagKeyOf<T>], string | symbol>, keyof Cases>>,
+    ) => unknown,
   >(
     taggedUnion: T,
     cases: Cases,
@@ -201,12 +205,32 @@ function createMatchPartial<T extends { [tagKeyPointer]?: keyof T } & Record<Tag
     Cases extends {
       [K in AssertExtends<T[TagKeyOf<T>], string | symbol>]?: (variant: VariantOf<T, K>) => unknown
     },
-  >(taggedUnion: T, cases: Cases): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | undefined {
+  >(taggedUnion: T, cases: Cases): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | undefined
+  function matchPartial<
+    Cases extends {
+      [K in AssertExtends<T[TagKeyOf<T>], string | symbol>]?: (variant: VariantOf<T, K>) => unknown
+    },
+    DefaultCase extends (
+      taggedUnion: VariantOf<T, Exclude<AssertExtends<T[TagKeyOf<T>], string | symbol>, keyof Cases>>,
+    ) => unknown,
+  >(
+    taggedUnion: T,
+    cases: Cases,
+    defaultCase: DefaultCase,
+  ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase>
+  function matchPartial<
+    Cases extends {
+      [K in AssertExtends<T[TagKeyOf<T>], string | symbol>]?: (variant: VariantOf<T, K>) => unknown
+    },
+    DefaultCase extends (
+      taggedUnion: VariantOf<T, Exclude<AssertExtends<T[TagKeyOf<T>], string | symbol>, keyof Cases>>,
+    ) => unknown,
+  >(taggedUnion: T, cases: Cases, defaultCase?: DefaultCase) {
     const tagValue = taggedUnion[tagKey] as string | symbol
     if (tagValue in cases) {
       return (cases as any)[tagValue](taggedUnion)
     }
-    return undefined
+    return (defaultCase as any)?.(taggedUnion)
   }
 
   return matchPartial
@@ -221,4 +245,16 @@ type MatchPartial<T extends { [tagKeyPointer]?: keyof T } & Record<TagKeyOf<T>, 
     taggedUnion: T,
     cases: Cases,
   ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | undefined
+  <
+    Cases extends {
+      [K in AssertExtends<T[TagKeyOf<T>], string | symbol>]?: (variant: VariantOf<T, K>) => unknown
+    },
+    DefaultCase extends (
+      taggedUnion: VariantOf<T, Exclude<AssertExtends<T[TagKeyOf<T>], string | symbol>, keyof Cases>>,
+    ) => unknown,
+  >(
+    taggedUnion: T,
+    cases: Cases,
+    defaultCase: DefaultCase,
+  ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase>
 }
