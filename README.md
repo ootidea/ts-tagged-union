@@ -1,4 +1,3 @@
-<span />
 <h1 align="center">ts-tagged-union</h1>
 
 A modern TypeScript library designed to reduce boilerplate for _tagged unions_, also known as _discriminated unions_.  
@@ -6,7 +5,7 @@ This library is also an implementation of [algebraic data types](https://wikiped
 
 ## Features
 
-- Defines tagged union types easily, including recursive ones.
+- Effortlessly defines tagged union types, encompassing even recursive ones
 - Generates following helper functions for each tagged union type (without code generation 👍)
     1. **Data constructors**
     2. **Pattern matching functions**
@@ -31,7 +30,7 @@ export type Color = TaggedUnion<{
 // Get helper functions for the type
 export const Color = createHelperFunctions<Color>()
 
-// Create with a data constructor
+// Create object with a data constructor
 const rgb = Color.rgb({ r: 255, g: 31, b: 0 })
 const primary = Color.primary() // {} can be omitted
 
