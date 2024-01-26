@@ -128,11 +128,59 @@ If you need to remove the _tag-key-pointer_, use **`RemoveTagKeyPointer`**.
 
 There are also several other utilities.  
 
-#### `TagKeyOf<T>`
+### `TagKeyOf<T>`
 Get the tag key of the given tagged union type.
 
-#### `VariantOf<T, Tag>`
+<details>
+<summary>example</summary>
+
+```ts
+type Response = TaggedUnion<
+  {
+    Success: { payload: Blob }
+    Failure: { message: string }
+  },
+  'status'
+>
+
+type TagKey = TagKeyOf<Response> // 'status'
+```
+</details>
+
+### `VariantOf<T, Tag>`
 Extract the variant type with the specific tag from a tagged union type.
 
-#### `PayloadOf<T, Tag>`
+<details>
+<summary>example</summary>
+
+```ts
+type Response = TaggedUnion<
+  {
+    Success: { payload: Blob }
+    Failure: { message: string }
+  },
+  'status'
+>
+
+type Variant = VariantOf<Response, 'Failure'> // { status: 'Failure', message: string }
+```
+</details>
+
+### `PayloadOf<T, Tag>`
 Extract the payload type of the variant with the specific tag from a tagged union type.
+
+<details>
+<summary>example</summary>
+
+```ts
+type Response = TaggedUnion<
+  {
+    Success: { payload: Blob }
+    Failure: { message: string }
+  },
+  'status'
+>
+
+type Payload = PayloadOf<Response, 'Failure'> // { message: string }
+```
+</details>
