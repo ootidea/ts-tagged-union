@@ -1,5 +1,5 @@
-import { defaultTagKey, PayloadOf, TagKeyOf, tagKeyPointer, VariantOf } from './index'
-import { AssertExtends, MergeIntersection } from './utility'
+import { type PayloadOf, type TagKeyOf, type VariantOf, defaultTagKey, tagKeyPointer } from './index'
+import type { AssertExtends, MergeIntersection } from './utility'
 
 /**
  * Create helper functions for the given tagged union type.
@@ -155,7 +155,7 @@ type IsNot<T extends { [tagKeyPointer]?: keyof T } & Record<TagKeyOf<T>, string 
 function createMatch<T extends { [tagKeyPointer]?: keyof T } & Record<TagKeyOf<T>, string | symbol>>(
   tagKey: TagKeyOf<T>,
 ) {
-  return function <
+  return <
     Cases extends {
       [K in AssertExtends<TagKeyOf<T>, string | symbol>]?: (variant: VariantOf<T, K>) => unknown
     },
@@ -166,7 +166,7 @@ function createMatch<T extends { [tagKeyPointer]?: keyof T } & Record<TagKeyOf<T
     taggedUnion: T,
     cases: Cases,
     defaultCase?: DefaultCase,
-  ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase> {
+  ): (Cases[keyof Cases] extends (...args: any) => infer R ? R : never) | ReturnType<DefaultCase> => {
     const tagValue = taggedUnion[tagKey] as string | symbol
     if (tagValue in cases) {
       return (cases as any)[tagValue](taggedUnion)

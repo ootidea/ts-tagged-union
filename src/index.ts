@@ -1,4 +1,4 @@
-import { MergeIntersection } from './utility'
+import type { MergeIntersection } from './utility'
 
 export { createHelperFunctions } from './createHelperFunctions'
 

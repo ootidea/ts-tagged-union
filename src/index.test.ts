@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, test } from 'vitest'
 import { createHelperFunctions } from './createHelperFunctions'
-import { AddTagKeyPointer, defaultTagKey, TaggedUnion } from './index'
+import { type AddTagKeyPointer, type TaggedUnion, defaultTagKey } from './index'
 
 type Shape = TaggedUnion<{ rect: { width: number; height: number }; circle: { radius: number } }>
 const Shape = createHelperFunctions<Shape>()
@@ -160,7 +160,7 @@ describe('Pattern matching', () => {
         {
           rect: ({ width, height }) => width * height,
         },
-        () => NaN,
+        () => Number.NaN,
       ),
     ).toBeNaN()
 
